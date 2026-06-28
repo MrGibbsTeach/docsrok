@@ -56,7 +56,7 @@ export async function POST(request: Request) {
             plan,
             status: 'active',
             trial_ends_at: null,
-            current_period_end: new Date(stripeSub.current_period_end * 1000).toISOString(),
+            current_period_end: new Date((stripeSub as any).current_period_end * 1000).toISOString(),
           })
           .eq('user_id', userId)
         break
@@ -82,7 +82,7 @@ export async function POST(request: Request) {
               : stripeSub.status === 'past_due' ? 'past_due'
               : stripeSub.status === 'canceled' ? 'canceled'
               : 'active',
-            current_period_end: new Date(stripeSub.current_period_end * 1000).toISOString(),
+            current_period_end: new Date((stripeSub as any).current_period_end * 1000).toISOString(),
           })
           .eq('stripe_subscription_id', stripeSub.id)
         break
