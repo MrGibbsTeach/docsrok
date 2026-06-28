@@ -1,0 +1,9 @@
+{
+  "framework": "nextjs",
+  "regions": ["syd1"],
+  "functions": {
+    "src/app/api/documents/generate/route.ts": {
+      "maxDuration": 120
+    }
+  }
+}
