@@ -18,8 +18,8 @@ export const REGULATORY: Record<StateCode, {
   },
   NSW: {
     act: 'Work Health and Safety Act 2011 (NSW)',
-    regulation: 'Work Health and Safety Regulation 2017 (NSW)',
-    citation: 'Work Health and Safety Act 2011 (NSW) · WHS Regulation 2017 (NSW)',
+    regulation: 'Work Health and Safety Regulation 2025 (NSW)',
+    citation: 'Work Health and Safety Act 2011 (NSW) · WHS Regulation 2025 (NSW)',
     regulator: 'SafeWork NSW',
     regulator_url: 'safework.nsw.gov.au',
     regulator_phone: '13 10 50',
