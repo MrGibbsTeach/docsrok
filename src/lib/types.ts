@@ -36,6 +36,7 @@ export const WORK_ACTIVITIES = [
   { key: 'confined_spaces', label: 'Confined space entry' },
   { key: 'hot_work', label: 'Hot work (welding, cutting, grinding)' },
   { key: 'crane_rigging', label: 'Crane and rigging operations' },
+  { key: 'plant_and_equipment', label: 'Plant and equipment operations (excavators, forklifts, telehandlers, skid steers)' },
   { key: 'demolition', label: 'Demolition work' },
 ] as const
 

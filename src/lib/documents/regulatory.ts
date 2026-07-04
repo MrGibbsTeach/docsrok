@@ -1,4 +1,4 @@
-export type StateCode = 'QLD' | 'NSW'
+export type StateCode = 'QLD' | 'NSW' | 'NZ'
 
 export const REGULATORY: Record<StateCode, {
   act: string
@@ -23,5 +23,16 @@ export const REGULATORY: Record<StateCode, {
     regulator: 'SafeWork NSW',
     regulator_url: 'safework.nsw.gov.au',
     regulator_phone: '13 10 50',
+  },
+  // NZ jurisdiction — not yet exposed in UI (types.ts State / OnboardingForm still QLD|NSW only).
+  // NZ prompts also require non-citation changes (000→111, ABN→NZBN, SWMS→Task Analysis/SSSP framing) —
+  // see D:\OneDrive\Personal\Work\DocsRok\regulatory-reference\markets\nz-prompt-changes.md
+  NZ: {
+    act: 'Health and Safety at Work Act 2015 (NZ)',
+    regulation: 'Health and Safety at Work (General Risk and Workplace Management) Regulations 2016 (NZ)',
+    citation: 'Health and Safety at Work Act 2015 (NZ) · GRWM Regulations 2016 (NZ)',
+    regulator: 'WorkSafe New Zealand',
+    regulator_url: 'worksafe.govt.nz',
+    regulator_phone: '0800 030 040',
   },
 }
