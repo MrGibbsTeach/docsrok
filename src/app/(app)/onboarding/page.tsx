@@ -31,7 +31,7 @@ export default async function OnboardingPage() {
       <div className="text-center mb-10">
         <h1 className="text-2xl font-bold text-gray-900">Set up your business</h1>
         <p className="text-gray-500 mt-2 text-sm">
-          Takes about 2 minutes. We'll generate your WHS documents straight away.
+          Takes about 2 minutes. We'll generate your business documents straight away.
         </p>
       </div>
 

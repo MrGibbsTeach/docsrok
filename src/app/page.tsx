@@ -2,80 +2,73 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'Docs Rok — WHS Compliance Documents for Australian Construction',
+  title: 'Docs Rok — Business Paperwork for Australian Trades',
   description:
-    'Generate state-specific WHS policies, SWMS, hazard registers, and compliance documents for your QLD or NSW construction business. Customised to your business in minutes.',
+    'Generate SOPs, subcontractor packs, quote templates, and business policies for your trade business. Customised to your business in minutes.',
 }
 
 const DOCUMENTS = [
   {
     icon: '📋',
-    name: 'WHS Policy',
-    desc: 'Your formal commitment to health and safety. Covers legislative framework, management duties, worker responsibilities, consultation, psychosocial hazards, and more.',
+    name: 'Standard Operating Procedures (SOPs)',
+    desc: 'For the processes that keep your business running the same way every time — job intake and quoting, scheduling, quality control, invoicing, complaint handling, and more.',
   },
   {
-    icon: '🔧',
-    name: 'Safe Work Method Statements (SWMS)',
-    desc: 'For all 10 high-risk construction activities — working at heights, excavation, scaffolding, confined spaces, crane operations, and more. Required by law for HRCW.',
+    icon: '🤝',
+    name: 'Subcontractor & New-Hire Welcome Packs',
+    desc: 'A clear welcome pack covering expectations, site protocols, communication, and payment terms — so new subbies and staff get up to speed faster.',
   },
   {
-    icon: '⚠️',
-    name: 'Hazard Register',
-    desc: 'A complete, site-ready hazard register with 18+ hazard categories, risk ratings, controls, and corrective action tracking.',
+    icon: '📝',
+    name: 'Quote & Proposal Templates',
+    desc: 'A polished, reusable quote structure for each type of job you do — scope, inclusions/exclusions, pricing table, terms, and acceptance block.',
   },
   {
-    icon: '🚑',
-    name: 'Incident Report Form',
-    desc: 'Covers injuries, near misses, dangerous incidents, and notifiable incidents. Includes 5 Whys root cause investigation and corrective action tracking.',
-  },
-  {
-    icon: '🚒',
-    name: 'Emergency Procedures',
-    desc: 'Site-ready emergency response for fire, medical emergencies, structural collapse, electrical incidents, chemical spills, and full evacuation procedure.',
+    icon: '📄',
+    name: 'Business Policy Documents',
+    desc: 'Customer service policy, complaints handling, terms of trade, cancellation and refund policy, and code of conduct — all in plain business English.',
   },
 ]
 
-const ACTIVITIES = [
-  'Working at heights',
-  'Manual handling',
-  'Electrical work',
-  'Excavation and trenching',
-  'Concrete cutting / grinding',
-  'Scaffolding erection',
-  'Confined space entry',
-  'Hot work (welding / cutting)',
-  'Crane and rigging operations',
-  'Demolition work',
+const SERVICES = [
+  'Job intake and quoting',
+  'Scheduling and dispatch',
+  'On-site quality control',
+  'Customer handover',
+  'Invoicing and payment',
+  'Complaint handling',
+  'Subcontractor onboarding',
+  'Equipment and vehicle care',
 ]
 
 const HOW_IT_WORKS = [
   {
     step: '1',
     title: 'Tell us about your business',
-    desc: 'Enter your business name, ABN, state, industry type, number of employees, and which high-risk activities your workers perform. Takes about 3 minutes.',
+    desc: 'Enter your business name, ABN, state, trade type, number of employees, and the services you offer. Takes about 3 minutes.',
   },
   {
     step: '2',
     title: 'Documents generate automatically',
-    desc: "Our AI generates every document customised to your business and your state's WHS legislation — typically in under 60 seconds.",
+    desc: 'Our AI generates every document customised to your business and your trade — typically in under 60 seconds.',
   },
   {
     step: '3',
-    title: 'View, print, and download',
-    desc: 'Open each document in your browser, review it, and save as PDF. Sign and distribute to your workers. Regenerate any time regulations change.',
+    title: 'Review, print, and download',
+    desc: 'Open each document in your browser, review it, edit anything you want to change, and save as PDF. Regenerate any time your business changes.',
   },
 ]
 
 const PLANS = [
   {
     name: 'Core',
-    price: 89,
+    price: 79,
     desc: 'For sole traders and small crews.',
     features: [
-      'All 5 WHS document types',
-      'SWMS for your chosen activities',
-      'QLD or NSW legislation',
-      'Customised to your business',
+      'SOPs for your key processes',
+      'Quote/proposal templates',
+      'Any Australian state',
+      'Customised to your trade',
       'Print-to-PDF download',
       'Email support',
     ],
@@ -84,13 +77,13 @@ const PLANS = [
   },
   {
     name: 'Plus',
-    price: 149,
+    price: 129,
     desc: 'For growing businesses.',
     features: [
       'Everything in Core',
-      'All 10 SWMS activity types',
+      'Subcontractor welcome packs',
+      'All business policy documents',
       'Regenerate documents any time',
-      'Priority regulatory updates',
       'Priority email support',
     ],
     cta: 'Start free trial',
@@ -98,7 +91,7 @@ const PLANS = [
   },
   {
     name: 'Team',
-    price: 249,
+    price: 199,
     desc: 'For larger businesses and subcontractors.',
     features: [
       'Everything in Plus',
@@ -113,24 +106,24 @@ const PLANS = [
 
 const FAQS = [
   {
-    q: 'Are the documents legally compliant?',
-    a: 'Every document is generated specifically for Queensland or New South Wales legislation — the Work Health and Safety Act 2011 and its state-specific Regulations. Documents reference the correct regulator (WHSQ for QLD, SafeWork NSW for NSW), notifiable incident obligations, current Codes of Practice, and current exposure standards (including the 0.05 mg/m³ silica standard). Templates have been reviewed by a WHS consultant. That said, documents are tools to help you comply — they do not replace your duty to implement safe work practices on site.',
+    q: 'What documents can I generate?',
+    a: 'Standard Operating Procedures for your key business processes (quoting, scheduling, quality control, invoicing, complaint handling, and more), subcontractor and new-hire welcome packs, reusable quote/proposal templates for the job types you do, and business policy documents (customer service, complaints, terms of trade, cancellation/refund, code of conduct).',
   },
   {
-    q: 'What states do you cover?',
-    a: 'Queensland and New South Wales. Both states operate under the model WHS Act 2011, but there are differences in Regulations and specific requirements — Docs Rok generates documents specific to your state. Additional states are planned for 2025.',
+    q: 'Which trades and states is this for?',
+    a: 'Any Australian trade or service business — building, plumbing, electrical, landscaping, carpentry, painting, cleaning, and more — in any state. Documents are tailored to your trade and business size, not tied to any specific state legislation.',
   },
   {
-    q: 'What if regulations change?',
-    a: 'We monitor Safe Work Australia, Workplace Health and Safety Queensland, and SafeWork NSW for regulatory changes. When something changes that affects your documents, we update our templates and you can regenerate immediately. Plus and Team subscribers get priority notification.',
-  },
-  {
-    q: 'Do I still need a WHS consultant?',
-    a: "Docs Rok doesn't replace a consultant for complex projects, incident investigations, or site-specific audits. What it replaces is paying $300–500 per document for standard compliance documentation that every construction business needs. Use the savings on the things that actually need a specialist.",
+    q: 'Is this legal or compliance advice?',
+    a: 'No. These are internal business-operations documents and templates — the kind you\'d normally write yourself or ask a business consultant to help with. They are not legal, safety, or compliance advice, and should be reviewed and adapted to your business before use, the same as any business document.',
   },
   {
     q: 'Can I edit the documents?',
-    a: 'Yes. Save as PDF and edit in any PDF editor, or print and fill in handwritten notes. Documents include site-specific placeholders (assembly point, site address, nearest hospital) that you complete for each project.',
+    a: 'Yes — that\'s expected. Save as PDF and edit in any editor, or use the content as a starting point and rewrite sections to match exactly how your business operates. Quote templates use placeholders you fill in for each job.',
+  },
+  {
+    q: 'How is this different from a generic template site or Notion doc?',
+    a: 'Generic SOP tools don\'t know anything about your trade. Docs Rok generates SOPs, subcontractor packs, quotes, and policies together, tailored to your specific trade and the services you actually offer — not a one-size-fits-all template.',
   },
   {
     q: 'Is there a contract? Can I cancel?',
@@ -164,16 +157,16 @@ export default function HomePage() {
       <section className="bg-white pt-20 pb-16 px-4 sm:px-6 text-center">
         <div className="max-w-3xl mx-auto">
           <div className="inline-block bg-orange-50 text-orange-700 text-xs font-semibold px-3 py-1 rounded-full mb-6 tracking-wide uppercase">
-            Queensland &amp; New South Wales
+            Any Australian trade, any state
           </div>
           <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-900 leading-tight mb-6">
-            WHS compliance documents for construction.{' '}
+            The paperwork your trade business never gets around to.{' '}
             <span className="text-orange-600">Done in minutes.</span>
           </h1>
           <p className="text-lg text-gray-500 mb-8 max-w-2xl mx-auto">
-            Stop paying $300–500 per document to a consultant. Docs Rok generates your WHS Policy,
-            SWMS, Hazard Register, Incident Report Form, and Emergency Procedures — customised to
-            your business and your state&apos;s WHS legislation.
+            Docs Rok generates your SOPs, subcontractor welcome packs, quote templates, and
+            business policies — customised to your trade and your business, so you can stop
+            starting from a blank page.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link
@@ -196,10 +189,10 @@ export default function HomePage() {
       {/* Trust bar */}
       <div className="bg-gray-50 border-y border-gray-100 py-4 px-4">
         <div className="max-w-4xl mx-auto flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-sm text-gray-500">
-          <span>✓ WHS Act 2011 (Qld) &amp; (NSW)</span>
-          <span>✓ WHSQ &amp; SafeWork NSW compliant</span>
-          <span>✓ WHS consultant reviewed</span>
-          <span>✓ 5 doc types · 10 SWMS activities</span>
+          <span>✓ Any Australian trade</span>
+          <span>✓ All states</span>
+          <span>✓ 4 document types</span>
+          <span>✓ Fully editable</span>
           <span>✓ Under 60 seconds</span>
         </div>
       </div>
@@ -208,28 +201,28 @@ export default function HomePage() {
       <section className="py-20 px-4 sm:px-6">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold text-gray-900 text-center mb-4">
-            WHS documentation is a legal requirement. It doesn&apos;t have to be a nightmare.
+            Every trade business needs this paperwork. Almost none of them have time to write it.
           </h2>
           <p className="text-gray-500 text-center mb-12 max-w-2xl mx-auto">
-            Every construction business in QLD and NSW must have WHS documents in place.
-            Here&apos;s what most builders are dealing with right now.
+            SOPs, subcontractor packs, quote templates, business policies — everyone agrees you
+            should have them. Here&apos;s what actually happens instead.
           </p>
           <div className="grid sm:grid-cols-3 gap-6">
             {[
               {
-                icon: '💸',
-                title: 'Consultants are expensive',
-                desc: 'A WHS consultant charges $300–500 per document. Five documents costs $1,500–2,500 — and that\'s before you factor in keeping them updated when regulations change.',
+                icon: '📥',
+                title: 'It never gets written',
+                desc: 'You know your quoting process should be written down somewhere. It lives in your head instead, which is fine until you\'re not the one answering the phone.',
               },
               {
                 icon: '📄',
-                title: 'Generic templates don\'t hold up',
-                desc: 'Free templates reference the wrong legislation, use the wrong regulator details, and have no idea what activities your workers actually perform on site.',
+                title: 'Generic templates don\'t fit',
+                desc: 'A Word template from Google doesn\'t know what trade you\'re in, what services you offer, or how your business actually runs a job.',
               },
               {
-                icon: '📅',
-                title: 'Regulations keep changing',
-                desc: 'NSW introduced psychosocial hazard regulations in 2022. QLD followed in 2023. Silica exposure standards halved in 2020. Most businesses haven\'t updated their docs.',
+                icon: '💸',
+                title: 'Consultants are overkill',
+                desc: 'Paying a business consultant to write internal SOPs and policy documents is real money for paperwork you could generate and adapt yourself in minutes.',
               },
             ].map((p) => (
               <div key={p.title} className="bg-gray-50 rounded-xl p-6">
@@ -246,11 +239,10 @@ export default function HomePage() {
       <section className="bg-gray-50 py-20 px-4 sm:px-6">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold text-gray-900 text-center mb-4">
-            Every document your construction business needs
+            Every document your trade business needs
           </h2>
           <p className="text-gray-500 text-center mb-12 max-w-2xl mx-auto">
-            All customised to your business name, ABN, address, state, industry type, and the
-            specific high-risk activities your workers perform.
+            All customised to your business name, ABN, trade type, and the specific services you offer.
           </p>
           <div className="grid sm:grid-cols-2 gap-4 mb-8">
             {DOCUMENTS.map((d) => (
@@ -264,10 +256,10 @@ export default function HomePage() {
 
           <div className="bg-white border border-gray-200 rounded-xl p-6">
             <h3 className="font-semibold text-gray-900 mb-4">
-              SWMS — 10 high-risk construction activities covered
+              SOPs — 8 core business processes covered
             </h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              {ACTIVITIES.map((a) => (
+              {SERVICES.map((a) => (
                 <div key={a} className="flex items-center gap-2 text-sm text-gray-600">
                   <span className="text-orange-500 font-bold flex-shrink-0">✓</span>
                   {a}
@@ -385,11 +377,11 @@ export default function HomePage() {
       <section className="bg-orange-600 py-20 px-4 sm:px-6 text-center">
         <div className="max-w-2xl mx-auto">
           <h2 className="text-3xl font-bold text-white mb-4">
-            Get your WHS documents sorted today
+            Get your business paperwork sorted today
           </h2>
           <p className="text-orange-100 mb-8 text-lg">
             Start your 14-day free trial. No credit card. No contract.
-            QLD and NSW construction businesses — up and running in minutes.
+            Australian trade businesses — up and running in minutes.
           </p>
           <Link
             href="/signup"
@@ -405,8 +397,8 @@ export default function HomePage() {
         <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-start justify-between gap-6">
           <div>
             <div className="text-orange-500 font-bold text-lg mb-1">Docs Rok</div>
-            <div className="text-xs">WHS compliance documents for Australian construction</div>
-            <div className="text-xs mt-1">Queensland &amp; New South Wales</div>
+            <div className="text-xs">Business paperwork for Australian trades</div>
+            <div className="text-xs mt-1">Any trade, any state</div>
           </div>
           <div className="flex gap-8 text-sm">
             <div>
@@ -434,7 +426,7 @@ export default function HomePage() {
           </div>
         </div>
         <div className="max-w-5xl mx-auto border-t border-gray-800 mt-8 pt-6 text-xs text-gray-600">
-          <p>© {new Date().getFullYear()} Docs Rok. Documents are generated for informational purposes and do not constitute legal advice. Always consult a qualified WHS professional for site-specific guidance.</p>
+          <p>© {new Date().getFullYear()} Docs Rok. Documents are templates and starting points for your business — review and adapt them before use. Not legal, financial, or professional advice.</p>
         </div>
       </footer>
 

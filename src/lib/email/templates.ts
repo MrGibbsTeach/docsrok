@@ -26,7 +26,7 @@ const base = (content: string) => `
     <div class="header"><h1>Docs Rok</h1></div>
     <div class="body">${content}</div>
     <div class="footer">
-      <p>Docs Rok — WHS documents for Australian construction SMBs.</p>
+      <p>Docs Rok — business paperwork for Australian trade businesses.</p>
       <p>If you didn't create an account, you can safely ignore this email.</p>
     </div>
   </div>
@@ -51,19 +51,18 @@ export function welcomeEmail(params: {
     html: base(`
       <p>Hi ${params.name || 'there'},</p>
       <p>Welcome to Docs Rok. Your 14-day free trial is now active — no credit card required until ${trialDate}.</p>
-      <p>Your WHS documents have been generated and are ready to view:</p>
+      <p>Your business documents have been generated and are ready to view:</p>
       <ul class="list">
-        <li>WHS Policy — customised to your business</li>
-        <li>Hazard Register</li>
-        <li>Safe Work Method Statements (SWMS)</li>
-        <li>Incident Report Form</li>
-        <li>Emergency Procedures</li>
+        <li>Standard Operating Procedures (SOPs) — customised to your business</li>
+        <li>Subcontractor &amp; new-hire welcome pack</li>
+        <li>Quote / proposal templates</li>
+        <li>Business policy documents</li>
       </ul>
       <a href="${appUrl}/dashboard" class="cta">View my documents →</a>
       <hr class="divider" />
       <p style="font-size:13px; color:#6b7280;">
-        All documents are generated for QLD and NSW under the Work Health and Safety Act 2011.
-        We recommend reviewing them with a qualified WHS professional before relying on them at your site.
+        These are business templates and starting points — review and adapt each one to your
+        business before use. Not legal, financial, or professional advice.
       </p>
     `),
   }
@@ -86,11 +85,11 @@ export function trialEndingEmail(params: {
     html: base(`
       <p>Hi ${params.name || 'there'},</p>
       <p>Your free trial ends on <strong>${trialDate}</strong> — that's ${params.daysLeft} days away.</p>
-      <p>To keep accessing your WHS documents, upgrade to a paid plan:</p>
+      <p>To keep accessing your business documents, upgrade to a paid plan:</p>
       <ul class="list">
-        <li><strong>Core — $89/month</strong> — 1 business, all core WHS docs</li>
-        <li><strong>Plus — $149/month</strong> — unlimited SWMS + priority support</li>
-        <li><strong>Team — $249/month</strong> — up to 5 businesses</li>
+        <li><strong>Core — $79/month</strong> — SOPs, quote templates, any Australian state</li>
+        <li><strong>Plus — $129/month</strong> — Core + subcontractor packs + all policies</li>
+        <li><strong>Team — $199/month</strong> — Plus + up to 5 team members</li>
       </ul>
       <a href="${appUrl}/upgrade" class="cta">Upgrade now →</a>
       <p>If you have any questions, reply to this email — we're happy to help.</p>
@@ -109,7 +108,7 @@ export function trialExpiredEmail(params: { name: string }) {
       <p>Hi ${params.name || 'there'},</p>
       <p>Your 14-day trial has ended. Your documents are still saved — upgrade to regain access.</p>
       <a href="${appUrl}/upgrade" class="cta">Choose a plan →</a>
-      <p>Plans start at $89/month with no lock-in contracts. Cancel anytime.</p>
+      <p>Plans start at $79/month with no lock-in contracts. Cancel anytime.</p>
     `),
   }
 }

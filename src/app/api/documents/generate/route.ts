@@ -2,13 +2,12 @@ import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
 import {
-  buildWhsPolicyPrompt,
-  buildSwmsPrompt,
-  buildHazardRegisterPrompt,
-  buildIncidentReportPrompt,
-  buildEmergencyProceduresPrompt,
+  buildSopPrompt,
+  buildSubcontractorPackPrompt,
+  buildQuoteTemplatePrompt,
+  buildBusinessPolicyPrompt,
 } from '@/lib/documents/prompts'
-import { REGULATORY, type StateCode } from '@/lib/documents/regulatory'
+import { PROCESS_TYPES, POLICY_TYPES } from '@/lib/types'
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY!,
@@ -44,6 +43,8 @@ export async function POST(request: Request) {
     }
 
     // Parse optional body — supports targeted single-doc generation
+    // activityKey doubles as: SOP process key, quote job-type key, or policy type key,
+    // depending on docType. subcontractor_pack has no sub-key.
     let body: { activityKey?: string; docType?: string } = {}
     try {
       body = await request.json()
@@ -64,51 +65,75 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Business not found' }, { status: 404 })
     }
 
-    const reg = REGULATORY[business.state as StateCode]
-
-    // ── Single document generation (Add SWMS / Regenerate) ──────────────
-    if (activityKey || docType) {
+    // ── Single document generation (Add / Regenerate from dashboard) ────
+    if (docType) {
       let task: Task
 
-      if (activityKey) {
-        // Check if this SWMS already exists — if so, mark it as not current before regenerating
+      if (docType === 'sop') {
+        if (!activityKey) {
+          return NextResponse.json({ error: 'activityKey (process type) required for sop' }, { status: 400 })
+        }
         await supabase
           .from('documents')
           .update({ is_current: false })
           .eq('user_id', user.id)
-          .eq('type', 'swms')
+          .eq('type', 'sop')
           .eq('activity_key', activityKey)
 
         task = {
-          type: 'swms',
-          title: `SWMS — ${activityKey.replace(/_/g, ' ')} — ${business.name}`,
-          prompt: buildSwmsPrompt(business, activityKey),
+          type: 'sop',
+          title: `SOP — ${activityKey.replace(/_/g, ' ')} — ${business.name}`,
+          prompt: buildSopPrompt(business, activityKey),
           activityKey,
         }
-      } else {
-        // Regenerate a non-SWMS document type
+      } else if (docType === 'quote_template') {
+        if (!activityKey) {
+          return NextResponse.json({ error: 'activityKey (job type) required for quote_template' }, { status: 400 })
+        }
         await supabase
           .from('documents')
           .update({ is_current: false })
           .eq('user_id', user.id)
-          .eq('type', docType!)
-
-        const prompts: Record<string, string> = {
-          whs_policy: buildWhsPolicyPrompt(business),
-          hazard_register: buildHazardRegisterPrompt(business),
-          incident_report: buildIncidentReportPrompt(business),
-          emergency_procedures: buildEmergencyProceduresPrompt(business),
-        }
-
-        if (!prompts[docType!]) {
-          return NextResponse.json({ error: 'Unknown document type' }, { status: 400 })
-        }
+          .eq('type', 'quote_template')
+          .eq('activity_key', activityKey)
 
         task = {
-          type: docType!,
-          title: `${docType!.replace(/_/g, ' ')} — ${business.name}`,
-          prompt: prompts[docType!],
+          type: 'quote_template',
+          title: `Quote Template — ${activityKey.replace(/_/g, ' ')} — ${business.name}`,
+          prompt: buildQuoteTemplatePrompt(business, activityKey),
+          activityKey,
         }
+      } else if (docType === 'business_policy') {
+        if (!activityKey) {
+          return NextResponse.json({ error: 'activityKey (policy type) required for business_policy' }, { status: 400 })
+        }
+        await supabase
+          .from('documents')
+          .update({ is_current: false })
+          .eq('user_id', user.id)
+          .eq('type', 'business_policy')
+          .eq('activity_key', activityKey)
+
+        task = {
+          type: 'business_policy',
+          title: `${activityKey.replace(/_/g, ' ')} — ${business.name}`,
+          prompt: buildBusinessPolicyPrompt(business, activityKey),
+          activityKey,
+        }
+      } else if (docType === 'subcontractor_pack') {
+        await supabase
+          .from('documents')
+          .update({ is_current: false })
+          .eq('user_id', user.id)
+          .eq('type', 'subcontractor_pack')
+
+        task = {
+          type: 'subcontractor_pack',
+          title: `Subcontractor & New-Hire Welcome Pack — ${business.name}`,
+          prompt: buildSubcontractorPackPrompt(business),
+        }
+      } else {
+        return NextResponse.json({ error: 'Unknown document type' }, { status: 400 })
       }
 
       const markdown = await callClaude(task.prompt)
@@ -121,7 +146,7 @@ export async function POST(request: Request) {
         content: { markdown, generated_at: new Date().toISOString() },
         activity_key: task.activityKey ?? null,
         state: business.state,
-        regulatory_citation: reg.citation,
+        regulatory_citation: '',
         is_current: true,
         version: 1,
       })
@@ -146,33 +171,37 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: 'Documents already generated' })
     }
 
-    // Build task list — all doc types + one SWMS per work activity
+    // Build task list — the full starter suite:
+    // 8 core-process SOPs + 1 subcontractor pack + 1 quote template per selected
+    // service + 5 business policies. Every new business gets the same starter set;
+    // services_offered (stored as work_activities) personalises quote templates.
+    const servicesOffered = (business.work_activities as string[]).length > 0
+      ? (business.work_activities as string[])
+      : ['general_services']
+
     const tasks: Task[] = [
+      ...PROCESS_TYPES.map(({ key }) => ({
+        type: 'sop',
+        title: `SOP — ${key.replace(/_/g, ' ')} — ${business.name}`,
+        prompt: buildSopPrompt(business, key),
+        activityKey: key,
+      })),
       {
-        type: 'whs_policy',
-        title: `WHS Policy — ${business.name}`,
-        prompt: buildWhsPolicyPrompt(business),
+        type: 'subcontractor_pack',
+        title: `Subcontractor & New-Hire Welcome Pack — ${business.name}`,
+        prompt: buildSubcontractorPackPrompt(business),
       },
-      {
-        type: 'hazard_register',
-        title: `Hazard Register — ${business.name}`,
-        prompt: buildHazardRegisterPrompt(business),
-      },
-      {
-        type: 'incident_report',
-        title: `Incident Report Form — ${business.name}`,
-        prompt: buildIncidentReportPrompt(business),
-      },
-      {
-        type: 'emergency_procedures',
-        title: `Emergency Procedures — ${business.name}`,
-        prompt: buildEmergencyProceduresPrompt(business),
-      },
-      ...(business.work_activities as string[]).map((activity) => ({
-        type: 'swms',
-        title: `SWMS — ${activity.replace(/_/g, ' ')} — ${business.name}`,
-        prompt: buildSwmsPrompt(business, activity),
-        activityKey: activity,
+      ...servicesOffered.map((jobType) => ({
+        type: 'quote_template',
+        title: `Quote Template — ${jobType.replace(/_/g, ' ')} — ${business.name}`,
+        prompt: buildQuoteTemplatePrompt(business, jobType),
+        activityKey: jobType,
+      })),
+      ...POLICY_TYPES.map(({ key }) => ({
+        type: 'business_policy',
+        title: `${key.replace(/_/g, ' ')} — ${business.name}`,
+        prompt: buildBusinessPolicyPrompt(business, key),
+        activityKey: key,
       })),
     ]
 
@@ -206,7 +235,7 @@ export async function POST(request: Request) {
         },
         activity_key: value.activityKey ?? null,
         state: business.state,
-        regulatory_citation: reg.citation,
+        regulatory_citation: '',
         is_current: true,
         version: 1,
       }))

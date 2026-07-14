@@ -5,9 +5,9 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Docs Rok — WHS Documents for Australian Construction',
+  title: 'Docs Rok — Business Paperwork for Australian Trades',
   description:
-    'Generate state-specific WHS policies, SWMS, and compliance documents for your Australian construction business. Always current when regulations change.',
+    'Generate SOPs, subcontractor packs, quote templates, and business policies for your trade business. Customised to your business in minutes.',
 }
 
 export default function RootLayout({

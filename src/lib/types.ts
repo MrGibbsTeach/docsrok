@@ -5,12 +5,21 @@ export type State = 'QLD' | 'NSW'
 export type Plan = 'trial' | 'core' | 'plus' | 'team'
 export type SubscriptionStatus = 'trialing' | 'active' | 'past_due' | 'canceled' | 'incomplete'
 
-export type DocumentType =
+// PIVOT (14 July 2026): retired from the live product — see Business-Plan-Trades-Docs-Pivot.md.
+// Kept here (not deleted) in case a future, professionally-gated re-entry into compliance
+// documents is ever revisited. Not reachable from the current UI/API.
+export type LegacyDocumentType =
   | 'whs_policy'
   | 'swms'
   | 'hazard_register'
   | 'incident_report'
   | 'emergency_procedures'
+
+export type DocumentType =
+  | 'sop'
+  | 'subcontractor_pack'
+  | 'quote_template'
+  | 'business_policy'
 
 export type IndustryType =
   | 'residential_construction'
@@ -21,23 +30,52 @@ export type IndustryType =
   | 'roofing'
   | 'concrete_formwork'
   | 'general_construction'
+  | 'carpentry'
+  | 'landscaping'
+  | 'painting_decorating'
+  | 'cleaning_services'
+  | 'handyman_general_repairs'
 
 export type EmployeeRange = '1-4' | '5-10' | '11-20' | '21-50' | '50+'
 
 // ── Constants ──────────────────────────────────────────────────
 
+// PIVOT (14 July 2026): this list now describes SERVICES OFFERED (used as descriptive
+// context in generated documents), not WHS/SWMS activities. The field name
+// `work_activities` is unchanged at the data layer to avoid a database migration.
 export const WORK_ACTIVITIES = [
-  { key: 'working_at_heights', label: 'Working at heights' },
-  { key: 'manual_handling', label: 'Manual handling and lifting operations' },
-  { key: 'electrical_work', label: 'Electrical work (including switchboard work)' },
-  { key: 'excavation', label: 'Excavation and trenching' },
-  { key: 'concrete_cutting', label: 'Concrete cutting, coring or grinding' },
-  { key: 'scaffolding', label: 'Scaffolding erection and dismantling' },
-  { key: 'confined_spaces', label: 'Confined space entry' },
-  { key: 'hot_work', label: 'Hot work (welding, cutting, grinding)' },
-  { key: 'crane_rigging', label: 'Crane and rigging operations' },
-  { key: 'plant_and_equipment', label: 'Plant and equipment operations (excavators, forklifts, telehandlers, skid steers)' },
-  { key: 'demolition', label: 'Demolition work' },
+  { key: 'installations', label: 'New installations' },
+  { key: 'repairs_and_maintenance', label: 'Repairs and maintenance' },
+  { key: 'renovations', label: 'Renovations and fit-outs' },
+  { key: 'new_builds', label: 'New builds' },
+  { key: 'servicing', label: 'Scheduled servicing' },
+  { key: 'emergency_callouts', label: 'Emergency call-outs' },
+  { key: 'inspections_and_quotes', label: 'Inspections and quotes' },
+  { key: 'design_consultation', label: 'Design and consultation' },
+  { key: 'commercial_contracts', label: 'Commercial contracts' },
+  { key: 'residential_contracts', label: 'Residential contracts' },
+] as const
+
+// New document-type sub-categories (replace the old SWMS-activity selection model).
+// A customer picks one of these when generating a specific SOP, quote template, or policy
+// from the dashboard — mirrors how SWMS activities used to work, but per new document type.
+export const PROCESS_TYPES = [
+  { key: 'job_intake_and_quoting', label: 'Job intake and quoting' },
+  { key: 'scheduling_and_dispatch', label: 'Scheduling and dispatch' },
+  { key: 'on_site_quality_control', label: 'On-site quality control' },
+  { key: 'customer_handover', label: 'Customer handover' },
+  { key: 'invoicing_and_payment', label: 'Invoicing and payment' },
+  { key: 'complaint_handling', label: 'Complaint handling' },
+  { key: 'subcontractor_onboarding', label: 'Subcontractor onboarding' },
+  { key: 'equipment_and_vehicle_care', label: 'Equipment and vehicle care' },
+] as const
+
+export const POLICY_TYPES = [
+  { key: 'customer_service_policy', label: 'Customer service policy' },
+  { key: 'complaints_handling_procedure', label: 'Complaints handling procedure' },
+  { key: 'terms_of_trade', label: 'Terms of trade' },
+  { key: 'cancellation_and_refund_policy', label: 'Cancellation and refund policy' },
+  { key: 'code_of_conduct', label: 'Code of conduct' },
 ] as const
 
 export const INDUSTRY_TYPES: { value: IndustryType; label: string }[] = [
@@ -77,13 +115,21 @@ export const PLAN_LABELS: Record<Plan, string> = {
 }
 
 export const PLAN_PRICES: Record<Exclude<Plan, 'trial'>, number> = {
-  core: 89,
-  plus: 149,
-  team: 249,
+  core: 79,
+  plus: 129,
+  team: 199,
 }
 
 // Documents included in each plan
 export const DOCUMENT_LABELS: Record<DocumentType, string> = {
+  sop: 'Standard Operating Procedure (SOP)',
+  subcontractor_pack: 'Subcontractor & New-Hire Welcome Pack',
+  quote_template: 'Quote / Proposal Template',
+  business_policy: 'Business Policy Document',
+}
+
+// Kept for any legacy data — not shown in the active UI.
+export const LEGACY_DOCUMENT_LABELS: Record<LegacyDocumentType, string> = {
   whs_policy: 'WHS Policy',
   swms: 'Safe Work Method Statement (SWMS)',
   hazard_register: 'Hazard Register',

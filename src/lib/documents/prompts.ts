@@ -716,3 +716,315 @@ ${b.name} will conduct emergency evacuation drills:
 
 Write in clear, direct Australian English. Use bold and call-out boxes for critical actions.`
 }
+
+// ════════════════════════════════════════════════════════════
+// PIVOT (14 July 2026): business-operations documents for AU trades.
+// These do not touch WHS/safety law by design — see Business-Plan-Trades-Docs-Pivot.md.
+// Reuses the existing BusinessContext shape (industry_type/whs_responsible_name/
+// whs_responsible_role/work_activities) rather than renaming fields, to avoid a
+// database migration. Read as: industry_type = trade category, whs_responsible_name/
+// role = primary contact, work_activities = services offered.
+// ════════════════════════════════════════════════════════════
+
+// ── Standard Operating Procedure ──────────────────────────────
+
+// Keys should match a PROCESS_TYPES list in src/lib/types.ts
+const PROCESS_GUIDANCE: Record<string, string> = {
+  job_intake_and_quoting:
+    'Cover the full lifecycle from first enquiry to accepted quote: how enquiries arrive (phone, website form, referral, walk-in), the information that must be captured before a quote can be prepared (site address, scope description, access constraints, photos, preferred timeframe, budget indication), how site visits/measure-ups are scheduled and who attends, how the quote is costed (materials, labour, margin, contingency), turnaround time targets for sending a quote after a site visit, how quotes are presented and followed up, and what happens when a customer accepts, wants changes, or goes quiet. Emphasise consistency — every lead should get the same standard of response regardless of who answers the phone.',
+  scheduling_and_dispatch:
+    'Cover how confirmed jobs get allocated to a date, crew, and vehicle: the booking/calendar system used, lead time expected between booking and start, how conflicting bookings are resolved, how materials and equipment are confirmed as available/ordered before a job is scheduled, how crews are notified of the day\'s jobs (briefing, job pack, site address, customer contact, access instructions, special requirements), how weather or supply delays are handled and communicated to the customer, and how last-minute cancellations or reschedules are processed and logged.',
+  on_site_quality_control:
+    'Cover the checks a tradesperson or supervisor performs during and at the end of a job to confirm the work meets the business\'s own quality standard before the customer is asked to sign off: pre-work checks (right materials on site, work area prepared, customer expectations reconfirmed), in-progress checkpoints appropriate to the trade, a final self-inspection checklist (finish quality, functionality testing, site clean-up, waste removal), photo documentation of completed work, and the escalation path when a fault or defect is found before handover.',
+  customer_handover:
+    'Cover the steps taken when a job is finished and the customer takes possession of the completed work: final walkthrough with the customer, explaining any warranties/guarantees and how to make a claim, providing care/maintenance guidance relevant to the trade, collecting final payment or confirming invoicing terms, requesting a review or referral, filing job photos and paperwork, and closing the job in the business\'s systems.',
+  invoicing_and_payment:
+    'Cover how and when invoices are issued (on completion, progress claims, deposit requirements), what an invoice must include (job reference, scope completed, GST, payment terms, bank details), accepted payment methods, standard payment terms (e.g. 7/14/30 days), the follow-up process for overdue accounts (reminder cadence, escalation, when work stops on an account), how variations/extra work get quoted and invoiced separately, and record-keeping requirements for accounting/tax purposes.',
+  complaint_handling:
+    'Cover how a customer complaint is received and logged (phone, email, in person), the target response time for acknowledging a complaint, how the issue is investigated (site revisit, photo review, speaking with the crew involved), the decision-making process for remedy (rework, partial refund, goodwill gesture) and who is authorised to approve each option, how the resolution is communicated to the customer, and how complaints are reviewed periodically to identify recurring issues in the business\'s processes.',
+  subcontractor_onboarding:
+    'Cover the steps taken before a new subcontractor starts work with the business: sighting their ABN/business registration and insurance certificates, agreeing rates and payment terms in writing, briefing them on the business\'s standard job protocols and communication expectations, providing site/job details and points of contact, setting expectations on quality standards and customer conduct, and the process for reviewing performance after the first few jobs.',
+  equipment_and_vehicle_care:
+    'Cover day-to-day responsibility for tools, equipment, and vehicles used in the business: pre-use checks before a job (fuel/charge, condition, load security), end-of-day/end-of-job checks (clean-down, return to storage, reporting damage or wear), a basic maintenance schedule (servicing intervals, consumables replacement), how faults or breakages are reported and who arranges repair, keeping equipment/vehicles presentable as they reflect the business\'s brand on the road and on site, and basic record-keeping for asset tracking and insurance purposes.',
+}
+
+export function buildSopPrompt(b: BusinessContext, processKey: string): string {
+  const processName = fmt(processKey)
+  const guidance =
+    PROCESS_GUIDANCE[processKey] ??
+    'Cover the full process from trigger to completion, who is responsible at each stage, what "done well" looks like, and how to handle common problems.'
+
+  return `You are a professional business operations consultant helping Australian trade and construction small businesses run more consistently. Generate a complete Standard Operating Procedure (SOP) for one internal business process.
+
+BUSINESS DETAILS:
+- Name: ${b.name}
+- ABN: ${b.abn ?? 'Not provided'}
+- Address: ${b.address ?? 'Not provided'}
+- Trade/service category: ${fmt(b.industry_type)}
+- Employees: ${b.employee_count_range}
+- Primary contact: ${whsPerson(b)}
+- State: ${b.state}
+- Services offered: ${b.work_activities.length > 0 ? b.work_activities.map(fmt).join(', ') : 'General trade services'}
+- Date: ${currentMonth()}
+
+PROCESS: ${processName.toUpperCase()}
+Process guidance: ${guidance}
+
+This SOP is an internal operations document — it is not a safety or compliance document. Its purpose is to make sure the process is done the same way every time, regardless of who is doing it, so the business runs consistently and customers get a predictable standard of service.
+
+Generate a professional, usable SOP in markdown. Every section must be complete — no placeholders.
+
+# Standard Operating Procedure
+## ${processName.charAt(0).toUpperCase() + processName.slice(1)}
+
+| Field | Detail |
+|-------|--------|
+| Business | ${b.name} |
+| Process | ${processName} |
+| Date prepared | ${currentMonth()} |
+| Version | 1.0 |
+| Prepared by | ${whsPerson(b)} |
+| Review date | ${nextYear()} |
+
+---
+
+### 1. Purpose & Scope
+Why this SOP exists, what it covers, and what it deliberately does not cover. Specific to ${fmt(b.industry_type)} operations at ${b.name}.
+
+### 2. Roles & Responsibilities
+Who is responsible for each stage of this process (owner/manager, office/admin, on-site crew, subcontractors as relevant) and what they are each accountable for. Reference ${whsPerson(b)} as the process owner unless a different role makes more sense for this process.
+
+### 3. Step-by-Step Procedure
+A clear numbered sequence covering the entire process from trigger to completion. Each step should be specific and actionable enough that a new staff member could follow it without additional explanation. Include realistic detail for a ${fmt(b.industry_type)} business — reference the kind of jobs implied by these services: ${b.work_activities.length > 0 ? b.work_activities.map(fmt).join(', ') : 'general trade work'}.
+
+### 4. Quality Checkpoints
+Specific points in the process where someone should stop and verify something before proceeding (a checklist-style list). What "good" looks like at each checkpoint.
+
+### 5. Common Issues & How to Handle Them
+At least 5 realistic problems that come up during this process for a business like ${b.name}, and the standard response to each — written so staff know what to do without needing to ask a manager every time.
+
+### 6. Review Schedule
+How often this SOP should be reviewed, what would trigger an earlier review (recurring problems, process change, new software/tools, staff feedback), and who is responsible for keeping it up to date.
+
+---
+*This SOP is a working document for ${b.name}. It should be updated as the business's processes evolve.*
+
+Write 900–1,300 words. Professional Australian English. Do not use placeholder text — all content must be complete and usable. Do not reference workplace health and safety law, SafeWork, WorkSafe, or safety compliance obligations — this is a business-operations document, not a safety document.`
+}
+
+// ── Subcontractor / New-Hire Welcome Pack ─────────────────────
+
+export function buildSubcontractorPackPrompt(b: BusinessContext): string {
+  return `You are a professional small business operations consultant helping an Australian trade/construction business create onboarding content. Generate a complete Subcontractor & New Hire Welcome Pack.
+
+BUSINESS DETAILS:
+- Name: ${b.name}
+- ABN: ${b.abn ?? 'Not provided'}
+- Address: ${b.address ?? 'Not provided'}
+- Trade/service category: ${fmt(b.industry_type)}
+- Employees: ${b.employee_count_range}
+- Primary contact: ${whsPerson(b)}
+- State: ${b.state}
+- Services offered: ${b.work_activities.length > 0 ? b.work_activities.map(fmt).join(', ') : 'General trade services'}
+- Date: ${currentMonth()}
+
+IMPORTANT: This is a welcome pack DOCUMENT — content to read and refer to. It is not a compliance-tracking system, not a legal contract, and not a safety induction. Do not reference workplace health and safety law, SafeWork, WorkSafe, or safety compliance obligations.
+
+Generate a professional, warm but clear Welcome Pack in markdown. Every section must be complete — no placeholders.
+
+# Welcome Pack
+## ${b.name}
+
+| Field | Detail |
+|-------|--------|
+| Prepared for | New subcontractors and team members |
+| Date | ${currentMonth()} |
+| Version | 1.0 |
+| Prepared by | ${whsPerson(b)} |
+
+---
+
+### 1. Welcome & Company Overview
+A genuine welcome message from ${b.name}. What the business does, the kind of work it takes on (${b.work_activities.length > 0 ? b.work_activities.map(fmt).join(', ') : 'general ' + fmt(b.industry_type) + ' work'}), the area(s) it services, what makes it a good business to work with, and what new subcontractors/team members can expect in their first few weeks.
+
+### 2. Code of Conduct & Expectations
+Clear expectations for professional behaviour: punctuality, presentation and uniform/branding, respectful treatment of customers and their property, language and conduct on site, use of phones/personal devices during work hours, punctuality with start times, and consequences of not meeting these standards. Written as a standard a small business would reasonably hold every worker to.
+
+### 3. Standard Site/Job Protocols
+Trade-specific expectations for how a job should be approached, tailored to ${fmt(b.industry_type)}: arriving prepared with the right tools/materials, protecting the customer's property (floor protection, drop sheets, dust control as relevant), keeping the work area tidy during the job, cleaning up at the end of each day and at job completion, parking and vehicle etiquette at the customer's property, and how to handle unexpected issues found on site (raise with office before proceeding with unscoped work).
+
+### 4. Communication Expectations
+How and when subcontractors/team members should communicate with the office: daily check-ins or job updates, who to contact for scheduling changes, how to report a problem or delay, expected response times, and the preferred channel (phone, text, email, job management app) for different kinds of communication.
+
+### 5. Invoicing/Payment Terms for Subcontractors
+How subcontractors submit invoices for completed work, what an invoice needs to include, standard payment terms and timing, how variations or extra work get approved and paid, and who to contact with a payment query.
+
+### 6. Who to Contact for What
+A simple reference table.
+
+| Need | Contact |
+|------|---------|
+| Scheduling / job bookings | ${whsPerson(b)} |
+| Payment / invoicing queries | ${whsPerson(b)} |
+| Materials or equipment issues | ${whsPerson(b)} |
+| General questions | ${whsPerson(b)} |
+
+---
+*Welcome to the team. This pack is a reference point — if anything is unclear, ask ${whsPerson(b)} directly.*
+
+Write 900–1,200 words. Professional, welcoming Australian English. Do not use placeholder text — all content must be complete and usable. This is a content document, not a compliance or safety system.`
+}
+
+// ── Quote / Proposal Template ─────────────────────────────────
+
+export function buildQuoteTemplatePrompt(b: BusinessContext, jobType: string): string {
+  const jobName = fmt(jobType)
+
+  return `You are a professional business consultant helping an Australian trade/construction business present quotes more professionally. Generate a complete, reusable Quote/Proposal Template STRUCTURE for a specific type of job — not a specific dollar quote for a real customer, but a polished template the business can reuse for every job of this type.
+
+BUSINESS DETAILS:
+- Name: ${b.name}
+- ABN: ${b.abn ?? 'Not provided'}
+- Address: ${b.address ?? 'Not provided'}
+- Trade/service category: ${fmt(b.industry_type)}
+- Employees: ${b.employee_count_range}
+- Primary contact: ${whsPerson(b)}
+- State: ${b.state}
+- Services offered: ${b.work_activities.length > 0 ? b.work_activities.map(fmt).join(', ') : 'General trade services'}
+- Date: ${currentMonth()}
+
+JOB TYPE: ${jobName.toUpperCase()}
+
+This is a TEMPLATE — use bracketed placeholders like [Customer Name], [Site Address], [Item description], [$ amount] wherever a real quote would need job-specific or customer-specific detail. Do not invent a specific dollar figure or a specific fictional customer. The value of this document is a ready-to-use structure ${b.name} can fill in for every ${jobName} job.
+
+Generate a professional, branded-feeling quote template in markdown. Every section must be complete — no vague instructions, actual template content with placeholders.
+
+# Quote / Proposal Template
+## ${jobName.charAt(0).toUpperCase() + jobName.slice(1)}
+
+| Field | Detail |
+|-------|--------|
+| Business | ${b.name} |
+| ABN | ${b.abn ?? '[Insert ABN]'} |
+| Template for | ${jobName} |
+| Date prepared | ${currentMonth()} |
+| Version | 1.0 |
+
+---
+
+### 1. Cover / Introduction
+A professional cover section: business name and logo placeholder, quote reference number format, date, customer name and site address placeholders, and a brief introductory paragraph template thanking the customer for the opportunity to quote and summarising the job at a high level.
+
+### 2. Scope of Work
+A structured template for describing exactly what work will be performed for a typical ${jobName} job for a ${fmt(b.industry_type)} business — broken into logical stages or components relevant to this job type, with placeholders for job-specific detail (dimensions, materials, quantities, finish level).
+
+### 3. Inclusions / Exclusions
+Two clear lists: what is included in the price (materials, labour, standard items for this job type) and what is explicitly excluded (common exclusions for ${jobName} jobs — e.g. permits, unforeseen conditions, work outside the described scope, supply of items by others). Written so the customer has no ambiguity about what they are and are not paying for.
+
+### 4. Pricing Table Structure
+A markdown pricing table template with realistic line-item categories for a ${jobName} job (e.g. materials, labour, equipment hire, disposal/waste as relevant), placeholder amounts, subtotal, GST, and total. Include a note on how variations to scope will be priced separately.
+
+| Item | Description | Qty | Unit Price | Total |
+|------|-------------|-----|-----------|-------|
+| [Item 1] | [Description] | [Qty] | [$Amount] | [$Amount] |
+
+**Subtotal (ex. GST):** [$Amount]
+**GST (10%):** [$Amount]
+**Total (inc. GST):** [$Amount]
+
+### 5. Terms
+Payment schedule template (e.g. deposit on acceptance, progress payment, balance on completion — with placeholder percentages/amounts), quote validity period (standard practice, e.g. 30 days), and a clear explanation of the variations process — how additional work discovered during the job will be quoted, approved, and invoiced separately from this quote.
+
+### 6. Acceptance / Signature Block
+A formal acceptance section where the customer confirms they accept the quote and its terms.
+
+| | |
+|---|---|
+| Customer name | [Insert] |
+| Signature | |
+| Date | |
+| Accepted total | [$Amount] |
+| Deposit paid (if applicable) | [$Amount] |
+
+---
+*This quote is valid for [30] days from the date above. All work will be carried out in accordance with the scope described. ${b.name} — ${whsPerson(b)}.*
+
+Write 700–1,000 words. Professional Australian English. Use placeholders in brackets for anything customer/job-specific — do not invent fictional customer details or a fabricated price. All structural and instructional content must be complete and usable, not vague.`
+}
+
+// ── Business Policy Documents ─────────────────────────────────
+
+const POLICY_GUIDANCE: Record<string, string> = {
+  customer_service_policy:
+    'Cover the standard of service customers can expect: response time commitments (enquiries, quotes, on-site arrival windows), communication standards, how appointments and rescheduling are handled, respect for customer property, how feedback is welcomed, and the business\'s general commitment to professionalism and fair dealing.',
+  complaints_handling_procedure:
+    'Cover how a customer complaint is lodged (channels, information needed), acknowledgement timeframe, investigation process, decision-making authority for remedies, communication of the outcome, timeframe for resolution, and the option to escalate internally if the customer is not satisfied with the initial response.',
+  terms_of_trade:
+    'Cover the standard commercial terms that apply to every job: quote validity, acceptance of quotes, payment terms and accepted methods, deposits and progress payments, ownership of materials until paid in full (retention of title), variations process and pricing, customer obligations (site access, services connected, obtaining necessary permissions), liability limitations for matters outside the business\'s control (e.g. pre-existing conditions, third-party delays), and dispute resolution approach.',
+  cancellation_and_refund_policy:
+    'Cover how a customer can cancel a booked job and the notice period required, any cancellation fee structure tied to notice given, how deposits are treated on cancellation, the business\'s approach to refunds where work has already commenced or materials already purchased, how rescheduling differs from cancellation, and the process a customer follows to request a cancellation or refund.',
+  code_of_conduct:
+    'Cover the standard of conduct expected of everyone representing the business (owners, employees, subcontractors): honesty and transparency with customers, respectful treatment of customers, colleagues, and the public, presentation and professionalism, protection of customer property and privacy, appropriate use of company vehicles/equipment/uniform, conflicts of interest, and the consequences of not upholding these standards.',
+}
+
+export function buildBusinessPolicyPrompt(b: BusinessContext, policyType: string): string {
+  const policyName = fmt(policyType)
+  const guidance =
+    POLICY_GUIDANCE[policyType] ??
+    'Cover the standard commercial content expected of this policy type for a small trade/service business, written in plain business English.'
+
+  return `You are a professional small business consultant helping an Australian trade/construction business formalise its commercial policies. Generate a complete, usable business policy document.
+
+BUSINESS DETAILS:
+- Name: ${b.name}
+- ABN: ${b.abn ?? 'Not provided'}
+- Address: ${b.address ?? 'Not provided'}
+- Trade/service category: ${fmt(b.industry_type)}
+- Employees: ${b.employee_count_range}
+- Primary contact: ${whsPerson(b)}
+- State: ${b.state}
+- Services offered: ${b.work_activities.length > 0 ? b.work_activities.map(fmt).join(', ') : 'General trade services'}
+- Date: ${currentMonth()}
+
+POLICY TYPE: ${policyName.toUpperCase()}
+Policy guidance: ${guidance}
+
+IMPORTANT: This is a general commercial policy document, not legal or safety advice. Do not reference workplace health and safety law, SafeWork, WorkSafe, or safety compliance obligations. Write standard business policy content that a small trade business would reasonably want on file and could hand to a customer or use internally.
+
+Generate a professional policy document in markdown. Every section must be complete — no placeholders.
+
+# ${policyName.charAt(0).toUpperCase() + policyName.slice(1)}
+## ${b.name}
+
+| Field | Detail |
+|-------|--------|
+| Version | 1.0 |
+| Date | ${currentMonth()} |
+| Review date | ${nextYear()} |
+| Document owner | ${whsPerson(b)} |
+
+---
+
+### 1. Purpose
+Why this policy exists and what it is intended to achieve for ${b.name} and its customers.
+
+### 2. Scope
+Who and what this policy applies to (customers, jobs, employees/subcontractors as relevant to this policy type) and any explicit exclusions.
+
+### 3. Policy Statement
+The core commitments and rules that make up this policy, written in clear plain English, specific to a ${fmt(b.industry_type)} business. This should be the most substantial section — cover every element flagged in the policy guidance above in full, usable detail rather than a bullet-point summary.
+
+### 4. Procedure / How This Works in Practice
+Step-by-step detail on how this policy is applied day to day — who does what, what timeframes apply, and what a customer or staff member should expect.
+
+### 5. Responsibilities
+Who within ${b.name} is responsible for upholding and administering this policy (reference ${whsPerson(b)} as the default owner unless the policy type suggests a different role).
+
+### 6. Review
+How often this policy will be reviewed and what would trigger an earlier review (customer feedback, recurring disputes, change in business operations).
+
+---
+*This policy is issued by ${b.name} and applies to all work carried out by the business unless otherwise agreed in writing.*
+
+Write 800–1,200 words. Professional, plain Australian business English. Do not use placeholder text — all content must be complete and usable. This is standard commercial policy content, not legal or safety advice.`
+}

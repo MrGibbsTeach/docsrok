@@ -79,7 +79,9 @@ export default async function DocumentPage({
             <span className="text-xs font-medium text-orange-600 uppercase tracking-wider">
               {doc.type.replace(/_/g, ' ')}
             </span>
-            <p className="text-xs text-gray-400 mt-1">{doc.regulatory_citation}</p>
+            {doc.regulatory_citation && (
+              <p className="text-xs text-gray-400 mt-1">{doc.regulatory_citation}</p>
+            )}
           </div>
           <span className="text-xs text-gray-400 whitespace-nowrap">
             Generated {new Date(doc.created_at).toLocaleDateString('en-AU')}

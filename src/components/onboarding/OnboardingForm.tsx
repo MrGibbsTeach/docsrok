@@ -19,9 +19,9 @@ const TOTAL_STEPS = 4
 
 const STEP_TITLES = [
   'Your business',
-  'State & industry',
-  'Size & WHS contact',
-  'Work activities',
+  'State & trade',
+  'Size & main contact',
+  'Services offered',
 ]
 
 // ── Step components ───────────────────────────────────────────
@@ -95,7 +95,7 @@ function Step2StateIndustry({
           State <span className="text-red-500">*</span>
         </label>
         <p className="text-xs text-gray-500 mb-3">
-          Your documents will reference the correct state WHS legislation.
+          Used to personalise your documents to your state.
         </p>
         <div className="grid grid-cols-2 gap-3">
           {(['QLD', 'NSW'] as State[]).map((state) => (
@@ -118,7 +118,7 @@ function Step2StateIndustry({
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Industry type <span className="text-red-500">*</span>
+          Trade / service type <span className="text-red-500">*</span>
         </label>
         <select
           required
@@ -126,7 +126,7 @@ function Step2StateIndustry({
           onChange={(e) => onChange({ industryType: e.target.value as IndustryType })}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white"
         >
-          <option value="">Select your industry type…</option>
+          <option value="">Select your trade / service type…</option>
           {INDUSTRY_TYPES.map(({ value, label }) => (
             <option key={value} value={value}>
               {label}
@@ -177,8 +177,8 @@ function Step3SizeContact({
 
       <div className="space-y-4">
         <h3 className="text-sm font-medium text-gray-700">
-          Person responsible for WHS{' '}
-          <span className="text-gray-400 font-normal">(appears on your WHS Policy)</span>
+          Primary contact{' '}
+          <span className="text-gray-400 font-normal">(appears on your documents)</span>
         </h3>
 
         <div>
@@ -226,8 +226,8 @@ function Step4Activities({
     <div className="space-y-4">
       <div>
         <p className="text-sm text-gray-600">
-          Select all work activities your business regularly performs. A Safe Work Method
-          Statement (SWMS) will be generated for each one.
+          Select all services your business regularly offers. This helps us tailor your SOPs,
+          quotes, and business documents to your work.
         </p>
         <p className="text-xs text-gray-400 mt-1">Select at least one.</p>
       </div>
@@ -258,7 +258,7 @@ function Step4Activities({
 
       {data.workActivities.length > 0 && (
         <p className="text-xs text-orange-600 font-medium">
-          {data.workActivities.length} activit{data.workActivities.length === 1 ? 'y' : 'ies'} selected
+          {data.workActivities.length} service{data.workActivities.length === 1 ? '' : 's'} selected
         </p>
       )}
     </div>

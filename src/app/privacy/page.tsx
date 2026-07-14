@@ -53,17 +53,17 @@ export default function PrivacyPage() {
 
             <h3 className="font-semibold text-gray-800 mt-4 mb-2">Business information</h3>
             <p>
-              You provide this information during onboarding. It is used to generate your WHS documents:
+              You provide this information during onboarding. It is used to generate your business documents:
             </p>
             <ul className="list-disc pl-5 space-y-1 mt-2">
               <li>Business name</li>
               <li>Australian Business Number (ABN)</li>
               <li>Business address</li>
-              <li>State of operation (QLD or NSW)</li>
-              <li>Industry type</li>
+              <li>State of operation</li>
+              <li>Trade / service type</li>
               <li>Number of employees</li>
-              <li>WHS responsible person name and role</li>
-              <li>Work activities performed by your business</li>
+              <li>Primary contact name and role</li>
+              <li>Services offered by your business</li>
             </ul>
 
             <h3 className="font-semibold text-gray-800 mt-4 mb-2">Payment information</h3>
@@ -85,7 +85,7 @@ export default function PrivacyPage() {
             <h2 className="text-lg font-semibold text-gray-900 mb-3">3. How we use your information</h2>
             <p>We use your information for the following purposes:</p>
             <ul className="list-disc pl-5 space-y-2 mt-3">
-              <li><strong>Providing the service</strong> — generating WHS compliance documents customised to your business</li>
+              <li><strong>Providing the service</strong> — generating business-operations documents customised to your business</li>
               <li><strong>Account management</strong> — creating and maintaining your account, authentication, and access control</li>
               <li><strong>Billing and payments</strong> — processing subscriptions and managing your billing through Stripe</li>
               <li><strong>Transactional emails</strong> — sending account confirmation, trial reminders, and payment receipts via Resend</li>
@@ -120,7 +120,7 @@ export default function PrivacyPage() {
                 <div className="font-semibold text-gray-800">Anthropic (Document Generation)</div>
                 <div className="text-gray-600 mt-1">
                   Your business information (name, ABN, state, industry, work activities) is sent
-                  to Anthropic&rsquo;s Claude API to generate your WHS documents. Anthropic processes
+                  to Anthropic&rsquo;s Claude API to generate your documents. Anthropic processes
                   this data to generate text and does not retain it for training purposes under
                   its API terms.
                 </div>
