@@ -87,6 +87,11 @@ export const INDUSTRY_TYPES: { value: IndustryType; label: string }[] = [
   { value: 'roofing', label: 'Roofing' },
   { value: 'concrete_formwork', label: 'Concrete / formwork' },
   { value: 'general_construction', label: 'General construction' },
+  { value: 'carpentry', label: 'Carpentry' },
+  { value: 'landscaping', label: 'Landscaping' },
+  { value: 'painting_decorating', label: 'Painting / decorating' },
+  { value: 'cleaning_services', label: 'Cleaning services' },
+  { value: 'handyman_general_repairs', label: 'Handyman / general repairs' },
 ]
 
 export const EMPLOYEE_RANGES: { value: EmployeeRange; label: string }[] = [

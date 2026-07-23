@@ -38,8 +38,8 @@ export default async function OnboardingPage() {
       <OnboardingForm userId={user.id} />
 
       <p className="text-center text-xs text-gray-400 mt-8">
-        Documents are generated for reference only and do not constitute legal or compliance advice.
-        Always review with a qualified WHS professional before relying on them.
+        Documents are generated as business templates and starting points only — not legal, financial,
+        or professional advice. Always review and adapt them to your business before relying on them.
       </p>
     </div>
   )
