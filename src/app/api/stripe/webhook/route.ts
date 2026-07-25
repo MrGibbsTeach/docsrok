@@ -11,6 +11,18 @@ function planFromPrice(priceId: string): 'core' | 'plus' | 'team' {
   return 'core'
 }
 
+// Newer Stripe API versions moved `current_period_end` from the top-level
+// Subscription object down to each subscription item. Check both locations
+// so this keeps working regardless of API version, and never throws if the
+// field is genuinely absent (RangeError: Invalid time value otherwise).
+function getCurrentPeriodEndIso(sub: Stripe.Subscription): string | null {
+  const raw =
+    (sub as any).current_period_end ??
+    sub.items?.data?.[0]?.current_period_end
+  if (typeof raw !== 'number' || !Number.isFinite(raw)) return null
+  return new Date(raw * 1000).toISOString()
+}
+
 export async function POST(request: Request) {
   const body = await request.text()
   const signature = request.headers.get('stripe-signature')
@@ -56,7 +68,7 @@ export async function POST(request: Request) {
             plan,
             status: 'active',
             trial_ends_at: null,
-            current_period_end: new Date((stripeSub as any).current_period_end * 1000).toISOString(),
+            current_period_end: getCurrentPeriodEndIso(stripeSub),
           })
           .eq('user_id', userId)
         break
@@ -82,7 +94,7 @@ export async function POST(request: Request) {
               : stripeSub.status === 'past_due' ? 'past_due'
               : stripeSub.status === 'canceled' ? 'canceled'
               : 'active',
-            current_period_end: new Date((stripeSub as any).current_period_end * 1000).toISOString(),
+            current_period_end: getCurrentPeriodEndIso(stripeSub),
           })
           .eq('stripe_subscription_id', stripeSub.id)
         break
