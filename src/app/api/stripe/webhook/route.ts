@@ -51,7 +51,16 @@ export async function POST(request: Request) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session
         const userId = session.metadata?.supabase_user_id
-        if (!userId || !session.subscription) break
+        console.log('checkout.session.completed', {
+          userId,
+          subscription: session.subscription,
+          customer: session.customer,
+          metadata: session.metadata,
+        })
+        if (!userId || !session.subscription) {
+          console.log('checkout.session.completed: skipping — missing userId or subscription')
+          break
+        }
 
         // Fetch full subscription from Stripe
         const stripeSub = await stripe.subscriptions.retrieve(
@@ -59,8 +68,9 @@ export async function POST(request: Request) {
         ) as unknown as Stripe.Subscription
         const priceId = stripeSub.items.data[0]?.price.id
         const plan = planFromPrice(priceId)
+        console.log('checkout.session.completed: updating subscription', { userId, priceId, plan })
 
-        await supabase
+        const { error: updateError, data: updateData } = await supabase
           .from('subscriptions')
           .update({
             stripe_customer_id: session.customer as string,
@@ -71,6 +81,8 @@ export async function POST(request: Request) {
             current_period_end: getCurrentPeriodEndIso(stripeSub),
           })
           .eq('user_id', userId)
+          .select()
+        console.log('checkout.session.completed: update result', { updateError, rowsUpdated: updateData?.length })
         break
       }
 
