@@ -8,8 +8,8 @@ import {
   INDUSTRY_TYPES,
   EMPLOYEE_RANGES,
   STATE_LABELS,
+  STATES,
   type OnboardingFormData,
-  type State,
   type IndustryType,
   type EmployeeRange,
   INITIAL_ONBOARDING_DATA,
@@ -97,13 +97,13 @@ function Step2StateIndustry({
         <p className="text-xs text-gray-500 mb-3">
           Used to personalise your documents to your state.
         </p>
-        <div className="grid grid-cols-2 gap-3">
-          {(['QLD', 'NSW'] as State[]).map((state) => (
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {STATES.map((state) => (
             <button
               key={state}
               type="button"
               onClick={() => onChange({ state })}
-              className={`p-4 rounded-lg border-2 text-left transition-colors ${
+              className={`p-3 rounded-lg border-2 text-left transition-colors ${
                 data.state === state
                   ? 'border-orange-500 bg-orange-50'
                   : 'border-gray-200 hover:border-gray-300 bg-white'

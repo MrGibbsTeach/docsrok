@@ -4,7 +4,9 @@ interface BusinessContext {
   name: string
   abn: string | null
   address: string | null
-  state: StateCode
+  // Any Australian state or territory. Only the legacy WHS builders below need a
+  // StateCode, and they fall back to QLD if given a state with no regulatory entry.
+  state: string
   industry_type: string
   employee_count_range: string
   whs_responsible_name: string | null
@@ -39,7 +41,7 @@ function whsPerson(b: BusinessContext) {
 // ── WHS Policy ────────────────────────────────────────────────
 
 export function buildWhsPolicyPrompt(b: BusinessContext): string {
-  const reg = REGULATORY[b.state]
+  const reg = REGULATORY[b.state as StateCode] ?? REGULATORY.QLD
   return `You are a professional WHS consultant in Australia with deep expertise in construction safety law. Generate a complete, formal WHS Policy document.
 
 BUSINESS DETAILS:
@@ -151,7 +153,7 @@ const ACTIVITY_GUIDANCE: Record<string, string> = {
 }
 
 export function buildSwmsPrompt(b: BusinessContext, activityKey: string): string {
-  const reg = REGULATORY[b.state]
+  const reg = REGULATORY[b.state as StateCode] ?? REGULATORY.QLD
   const activityName = fmt(activityKey)
   const guidance =
     ACTIVITY_GUIDANCE[activityKey] ??
@@ -244,7 +246,7 @@ Write in clear, direct professional Australian English. Suitable for use on a re
 // ── Hazard Register ───────────────────────────────────────────
 
 export function buildHazardRegisterPrompt(b: BusinessContext): string {
-  const reg = REGULATORY[b.state]
+  const reg = REGULATORY[b.state as StateCode] ?? REGULATORY.QLD
 
   return `You are a professional WHS consultant in Australia. Generate a complete Hazard Register for a ${fmt(b.industry_type)} business in ${b.state}.
 
@@ -328,7 +330,7 @@ Write in professional Australian English. All hazards, controls, and ratings mus
 // ── Incident Report Form ──────────────────────────────────────
 
 export function buildIncidentReportPrompt(b: BusinessContext): string {
-  const reg = REGULATORY[b.state]
+  const reg = REGULATORY[b.state as StateCode] ?? REGULATORY.QLD
 
   return `You are a professional WHS consultant in Australia. Generate a complete Incident Report Form for a construction business in ${b.state}.
 
@@ -506,7 +508,7 @@ Write in professional Australian English. All section instructions must be clear
 // ── Emergency Procedures ──────────────────────────────────────
 
 export function buildEmergencyProceduresPrompt(b: BusinessContext): string {
-  const reg = REGULATORY[b.state]
+  const reg = REGULATORY[b.state as StateCode] ?? REGULATORY.QLD
 
   return `You are a professional WHS consultant in Australia. Generate complete Emergency Procedures for a construction business in ${b.state}. This document will be printed and displayed on construction sites.
 

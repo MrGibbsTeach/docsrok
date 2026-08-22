@@ -1,6 +1,10 @@
 // Docs Rok — Core TypeScript types and constants
 
-export type State = 'QLD' | 'NSW'
+// PIVOT (14 July 2026): the market is every Australian state and territory.
+// The landing page advertises "any Australian state" in four places; this type,
+// STATE_LABELS, the onboarding picker and the database CHECK constraints all
+// had to be widened to match, otherwise anyone outside QLD/NSW cannot sign up.
+export type State = 'QLD' | 'NSW' | 'VIC' | 'WA' | 'SA' | 'TAS' | 'ACT' | 'NT'
 
 export type Plan = 'trial' | 'core' | 'plus' | 'team'
 export type SubscriptionStatus = 'trialing' | 'active' | 'past_due' | 'canceled' | 'incomplete'
@@ -102,12 +106,23 @@ export const EMPLOYEE_RANGES: { value: EmployeeRange; label: string }[] = [
   { value: '50+', label: '50+ employees' },
 ]
 
+export const STATES: State[] = ['NSW', 'VIC', 'QLD', 'WA', 'SA', 'TAS', 'ACT', 'NT']
+
 export const STATE_LABELS: Record<State, string> = {
-  QLD: 'Queensland',
   NSW: 'New South Wales',
+  VIC: 'Victoria',
+  QLD: 'Queensland',
+  WA: 'Western Australia',
+  SA: 'South Australia',
+  TAS: 'Tasmania',
+  ACT: 'Australian Capital Territory',
+  NT: 'Northern Territory',
 }
 
-export const STATE_WHS_ACT: Record<State, string> = {
+// LEGACY (pre-pivot WHS documents only, unreachable from the current UI).
+// Deliberately partial: the live product's documents are not tied to state
+// legislation, so there is nothing to add here for the other states.
+export const STATE_WHS_ACT: Partial<Record<State, string>> = {
   QLD: 'Work Health and Safety Act 2011 (Qld)',
   NSW: 'Work Health and Safety Act 2011 (NSW)',
 }
