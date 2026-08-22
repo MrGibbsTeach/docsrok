@@ -331,7 +331,9 @@ export default function OnboardingForm({ userId }: { userId: string }) {
     }
 
     // Fire document generation — don't await, let it run while user sees dashboard
-    fetch('/api/documents/generate', { method: 'POST' }).catch(console.error)
+    // keepalive so the request is not cancelled if the user navigates away
+    // or closes the tab before generation finishes.
+    fetch('/api/documents/generate', { method: 'POST', keepalive: true }).catch(console.error)
 
     router.push('/dashboard')
     router.refresh()

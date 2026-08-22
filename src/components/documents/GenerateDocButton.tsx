@@ -7,48 +7,93 @@ interface Props {
   activityKey?: string
   docType?: string
   label: string
-  variant?: 'add' | 'regenerate'
+  variant?: 'add' | 'regenerate' | 'retry'
 }
 
-export default function GenerateDocButton({ activityKey, docType, label, variant = 'add' }: Props) {
+export default function GenerateDocButton({
+  activityKey,
+  docType,
+  label,
+  variant = 'add',
+}: Props) {
   const [status, setStatus] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const router = useRouter()
 
   async function handleGenerate() {
     setStatus('loading')
+    setErrorMessage(null)
     try {
       const res = await fetch('/api/documents/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ activityKey, docType }),
       })
-      const data = await res.json() as { success?: boolean; error?: string }
-      if (data.success) {
+
+      let data: { success?: boolean; error?: string; message?: string } = {}
+      try {
+        data = (await res.json()) as typeof data
+      } catch {
+        // Non-JSON response (gateway timeout, HTML error page).
+      }
+
+      // `message: 'Documents already generated'` is a success from the user's
+      // point of view, so treat any 2xx as success rather than requiring the
+      // success flag specifically.
+      if (res.ok && !data.error) {
         setStatus('done')
         router.refresh()
-      } else {
-        console.error('Generate error:', data.error)
-        setStatus('error')
+        return
       }
+
+      const message =
+        data.error ??
+        (res.status === 504
+          ? 'Generation timed out. Please try again.'
+          : `Generation failed (${res.status}).`)
+      console.error('Generate error:', message)
+      setErrorMessage(message)
+      setStatus('error')
     } catch (err) {
       console.error(err)
+      setErrorMessage(
+        err instanceof Error ? err.message : 'Could not reach the server. Check your connection.'
+      )
       setStatus('error')
     }
   }
 
   if (status === 'loading') {
-    return (
-      <span className="text-xs text-gray-400 italic">Generating…</span>
-    )
+    return <span className="text-xs text-gray-400 italic">Generating…</span>
   }
 
   if (status === 'error') {
     return (
+      <span className="inline-flex flex-col items-center gap-1">
+        <button
+          onClick={handleGenerate}
+          className={
+            variant === 'retry'
+              ? 'bg-orange-600 text-white text-sm font-semibold px-5 py-2.5 rounded-lg hover:bg-orange-700 transition-colors'
+              : 'text-xs text-red-600 underline'
+          }
+        >
+          {variant === 'retry' ? 'Try again' : 'Failed — retry'}
+        </button>
+        {errorMessage && (
+          <span className="text-xs text-red-600 max-w-xs break-words">{errorMessage}</span>
+        )}
+      </span>
+    )
+  }
+
+  if (variant === 'retry') {
+    return (
       <button
         onClick={handleGenerate}
-        className="text-xs text-red-600 underline"
+        className="bg-orange-600 text-white text-sm font-semibold px-5 py-2.5 rounded-lg hover:bg-orange-700 transition-colors"
       >
-        Failed — retry
+        Try generating again
       </button>
     )
   }

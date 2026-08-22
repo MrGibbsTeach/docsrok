@@ -68,6 +68,18 @@ export default async function DashboardPage({
   const isActive = subscription?.status === 'active'
   const isPastDue = subscription?.status === 'past_due'
 
+  // Document generation is fired and forgotten immediately after onboarding.
+  // If it failed (Anthropic outage, exhausted credits, rate limit, function
+  // timeout) nothing is recorded anywhere, and the dashboard used to sit on
+  // "Generating your documents..." indefinitely. Treat a business that has
+  // existed for a few minutes with zero documents as a failure, not progress.
+  const businessCreatedAt = business.created_at
+    ? new Date(business.created_at).getTime()
+    : null
+  const minutesSinceOnboarding =
+    businessCreatedAt !== null ? (now - businessCreatedAt) / 60_000 : 0
+  const generationFailed = documents.length === 0 && minutesSinceOnboarding > 3
+
   return (
     <div className="space-y-6">
 
@@ -182,6 +194,31 @@ export default async function DashboardPage({
               </div>
             ))}
           </div>
+        ) : generationFailed ? (
+          <div className="bg-white border border-red-200 rounded-xl p-12 text-center">
+            <div className="text-4xl mb-4">⚠️</div>
+            <h3 className="text-base font-semibold text-gray-900 mb-2">
+              We couldn&apos;t generate your documents
+            </h3>
+            <p className="text-sm text-gray-600 mb-2 max-w-md mx-auto">
+              Something went wrong on our side while building your SOPs, subcontractor pack,
+              quote templates and policies. Your account and your answers are safe — nothing
+              needs to be re-entered.
+            </p>
+            <p className="text-sm text-gray-500 mb-6">
+              Press the button below to try again. It takes about a minute.
+            </p>
+            <div className="flex items-center justify-center gap-3">
+              <GenerateDocButton label="your documents" variant="retry" />
+            </div>
+            <p className="text-xs text-gray-400 mt-4">
+              Still failing? Email{' '}
+              <a href="mailto:support@docsrok.com" className="underline">
+                support@docsrok.com
+              </a>{' '}
+              and we&apos;ll sort it out for you.
+            </p>
+          </div>
         ) : (
           <div className="bg-white border border-gray-200 rounded-xl p-12 text-center">
             <div className="text-4xl mb-4">⚙️</div>
@@ -202,8 +239,8 @@ export default async function DashboardPage({
               <GenerateDocButton label="your documents" variant="add" />
             </div>
             <p className="text-xs text-gray-400 mt-3">
-              Still nothing after refreshing? Click "+ Generate" to retry — the first attempt can
-              occasionally fail (for example, if our AI provider is briefly unavailable).
+              Taking longer than a minute? Refresh once more — if it still hasn&apos;t appeared
+              we&apos;ll show you a retry button.
             </p>
           </div>
         )}

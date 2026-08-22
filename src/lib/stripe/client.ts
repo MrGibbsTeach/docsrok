@@ -1,10 +1,14 @@
 import Stripe from 'stripe'
 
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('STRIPE_SECRET_KEY is not set')
-}
+// Deliberately NOT throwing at module scope. Vercel evaluates modules during
+// static page generation ("Collecting page data"), so a module-level throw
+// fails the whole build rather than just the route that needs the key.
+// Routes that use Stripe should rely on `isStripeConfigured` at request time.
+const secretKey = process.env.STRIPE_SECRET_KEY ?? 'missing'
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+export const isStripeConfigured = process.env.STRIPE_SECRET_KEY !== undefined
+
+export const stripe = new Stripe(secretKey, {
   apiVersion: '2026-06-24.dahlia',
   typescript: true,
 })

@@ -9,19 +9,82 @@ import {
 } from '@/lib/documents/prompts'
 import { PROCESS_TYPES, POLICY_TYPES } from '@/lib/types'
 
+// The full starter suite is ~24 documents. Give the function room to finish;
+// Vercel silently caps this to the plan maximum if it is lower.
+export const maxDuration = 300
+
 const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY!,
+  apiKey: process.env.ANTHROPIC_API_KEY ?? 'missing',
 })
 
+const MAX_ATTEMPTS = 4
+// Firing all ~24 prompts at once reliably triggered 529 Overloaded responses.
+// A modest cap plus backoff is far more likely to complete than a burst.
+const CONCURRENCY = 8
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
+function isRetryable(err: unknown): boolean {
+  const status = (err as { status?: number })?.status
+  if (typeof status === 'number') {
+    // 429 rate limit, 529 overloaded, and any 5xx are worth another go.
+    return status === 408 || status === 409 || status === 429 || status >= 500
+  }
+  const name = (err as { name?: string })?.name
+  return name === 'APIConnectionError' || name === 'APIConnectionTimeoutError'
+}
+
 async function callClaude(prompt: string): Promise<string> {
-  const message = await anthropic.messages.create({
-    model: 'claude-opus-4-5',
-    max_tokens: 4096,
-    messages: [{ role: 'user', content: prompt }],
-  })
-  const block = message.content[0]
-  if (block.type !== 'text') throw new Error('Unexpected Claude response type')
-  return block.text
+  let lastErr: unknown
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    try {
+      const message = await anthropic.messages.create({
+        model: 'claude-opus-4-5',
+        max_tokens: 4096,
+        messages: [{ role: 'user', content: prompt }],
+      })
+      const block = message.content[0]
+      if (block.type !== 'text') throw new Error('Unexpected Claude response type')
+      return block.text
+    } catch (err) {
+      lastErr = err
+      if (attempt === MAX_ATTEMPTS || !isRetryable(err)) throw err
+      const backoff = 1000 * 2 ** (attempt - 1) + Math.floor(Math.random() * 400)
+      console.warn(
+        `Claude call failed (attempt ${attempt}/${MAX_ATTEMPTS}), retrying in ${backoff}ms`,
+        (err as { status?: number })?.status ?? err
+      )
+      await sleep(backoff)
+    }
+  }
+  throw lastErr
+}
+
+/** Promise.allSettled semantics, but with a cap on how many run at once. */
+async function settleWithConcurrency<T, R>(
+  items: T[],
+  limit: number,
+  fn: (item: T, index: number) => Promise<R>
+): Promise<PromiseSettledResult<R>[]> {
+  const results = new Array<PromiseSettledResult<R>>(items.length)
+  let cursor = 0
+
+  async function worker(): Promise<void> {
+    for (;;) {
+      const i = cursor++
+      if (i >= items.length) return
+      try {
+        results[i] = { status: 'fulfilled', value: await fn(items[i], i) }
+      } catch (reason) {
+        results[i] = { status: 'rejected', reason }
+      }
+    }
+  }
+
+  await Promise.all(
+    Array.from({ length: Math.min(limit, items.length) }, () => worker())
+  )
+  return results
 }
 
 type Task = {
@@ -205,17 +268,18 @@ export async function POST(request: Request) {
       })),
     ]
 
-    // Generate all documents in parallel
-    const results = await Promise.allSettled(
-      tasks.map(async (task) => {
-        const markdown = await callClaude(task.prompt)
-        return { ...task, markdown }
-      })
-    )
+    // Generate all documents, capped concurrency with retry/backoff.
+    const results = await settleWithConcurrency(tasks, CONCURRENCY, async (task) => {
+      const markdown = await callClaude(task.prompt)
+      return { ...task, markdown }
+    })
 
+    const failures: string[] = []
     results.forEach((r, i) => {
       if (r.status === 'rejected') {
-        console.error(`Failed to generate ${tasks[i].type}:`, r.reason)
+        const label = `${tasks[i].type}${tasks[i].activityKey ? `/${tasks[i].activityKey}` : ''}`
+        failures.push(label)
+        console.error(`Failed to generate ${label}:`, r.reason)
       }
     })
 
@@ -241,7 +305,18 @@ export async function POST(request: Request) {
       }))
 
     if (inserts.length === 0) {
-      return NextResponse.json({ error: 'All documents failed to generate' }, { status: 500 })
+      const firstReason = results.find((r) => r.status === 'rejected') as
+        | PromiseRejectedResult
+        | undefined
+      const detail =
+        firstReason?.reason instanceof Error
+          ? firstReason.reason.message
+          : String(firstReason?.reason ?? 'unknown error')
+      console.error('All documents failed to generate:', detail)
+      return NextResponse.json(
+        { error: `All documents failed to generate. First error: ${detail}` },
+        { status: 500 }
+      )
     }
 
     const { error: insertError } = await supabase.from('documents').insert(inserts)
@@ -254,7 +329,8 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       generated: inserts.length,
-      failed: results.filter((r) => r.status === 'rejected').length,
+      failed: failures.length,
+      failedDocuments: failures,
     })
   } catch (err) {
     console.error('Generation error:', err)

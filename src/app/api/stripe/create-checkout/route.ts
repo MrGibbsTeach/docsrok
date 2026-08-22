@@ -54,6 +54,11 @@ export async function POST(request: Request) {
       success_url: `${appUrl}/dashboard?success=true`,
       cancel_url: `${appUrl}/upgrade`,
       metadata: { supabase_user_id: user.id, plan },
+      // Stamp the Subscription itself too, so later subscription.* webhook
+      // events can find the user even before stripe_subscription_id is stored.
+      subscription_data: {
+        metadata: { supabase_user_id: user.id, plan },
+      },
     })
 
     return NextResponse.json({ url: session.url })
