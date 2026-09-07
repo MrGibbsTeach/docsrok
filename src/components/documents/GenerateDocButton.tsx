@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 interface Props {
@@ -19,8 +19,16 @@ export default function GenerateDocButton({
   const [status, setStatus] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const router = useRouter()
+  // React state updates aren't synchronous, so a fast double-click can fire
+  // handleGenerate twice before the "Generating…" state re-renders and swaps
+  // the button out. That's how a single click on "Generate remaining
+  // documents" turned into two full (paid, Anthropic-billed) generation runs
+  // in testing. A ref-based lock closes that gap immediately, on the same tick.
+  const inFlight = useRef(false)
 
   async function handleGenerate() {
+    if (inFlight.current) return
+    inFlight.current = true
     setStatus('loading')
     setErrorMessage(null)
     try {
@@ -60,6 +68,8 @@ export default function GenerateDocButton({
         err instanceof Error ? err.message : 'Could not reach the server. Check your connection.'
       )
       setStatus('error')
+    } finally {
+      inFlight.current = false
     }
   }
 
