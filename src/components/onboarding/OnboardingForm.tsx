@@ -330,6 +330,15 @@ export default function OnboardingForm({ userId }: { userId: string }) {
       return
     }
 
+    // Funnel step: onboarding finished. Fired before generation so the two can be
+    // told apart when generation fails.
+    fetch('/api/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ event: 'onboarding_completed' }),
+      keepalive: true,
+    }).catch(() => {})
+
     // Fire document generation — don't await, let it run while user sees dashboard
     // keepalive so the request is not cancelled if the user navigates away
     // or closes the tab before generation finishes.

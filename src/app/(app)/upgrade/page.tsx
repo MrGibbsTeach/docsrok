@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import ExitSurvey from '@/components/ExitSurvey'
 
 // PIVOT (7 Sept 2026): moved from 3 monthly subscription tiers to a single
 // one-time $149 AUD purchase that unlocks the full document set. The free
@@ -91,6 +92,8 @@ export default function UpgradePage() {
           {loading ? 'Redirecting…' : 'Unlock for $149 →'}
         </button>
       </div>
+
+      <ExitSurvey />
 
       <div className="mt-8 text-center text-sm text-gray-400">
         <p>Price in AUD · GST inclusive · Secure payment via Stripe</p>

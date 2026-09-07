@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { sendEmail } from '@/lib/email/resend'
+import { track } from '@/lib/analytics/track'
 import { welcomeEmail } from '@/lib/email/templates'
 import { NextResponse } from 'next/server'
 
@@ -22,6 +23,8 @@ export async function GET(request: Request) {
         .single()
 
       if (!business) {
+        await track('signup_completed', data.user.id)
+
         // New user — welcome email is unconditional now (no trial deadline to check).
         const fullName =
           (data.user.user_metadata?.full_name as string | undefined) ?? ''

@@ -8,6 +8,7 @@ import {
   buildBusinessPolicyPrompt,
 } from '@/lib/documents/prompts'
 import { PROCESS_TYPES, POLICY_TYPES, FREE_SOP_KEY } from '@/lib/types'
+import { track } from '@/lib/analytics/track'
 
 // The full starter suite is ~24 documents. Give the function room to finish;
 // Vercel silently caps this to the plan maximum if it is lower.
@@ -372,6 +373,7 @@ export async function POST(request: Request) {
           ? firstReason.reason.message
           : String(firstReason?.reason ?? 'unknown error')
       console.error('All documents failed to generate:', detail)
+      await track('generation_failed', user.id, { detail, attempted: tasksToRun.length })
       return NextResponse.json(
         { error: `All documents failed to generate. First error: ${detail}` },
         { status: 500 }
@@ -384,6 +386,12 @@ export async function POST(request: Request) {
       console.error('Insert error:', insertError)
       return NextResponse.json({ error: insertError.message }, { status: 500 })
     }
+
+    await track('generation_completed', user.id, {
+      generated: inserts.length,
+      failed: failures.length,
+      tier: isPaid ? 'paid' : 'free',
+    })
 
     return NextResponse.json({
       success: true,

@@ -2,6 +2,7 @@ import { stripe } from '@/lib/stripe/client'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { NextResponse } from 'next/server'
 import type Stripe from 'stripe'
+import { track } from '@/lib/analytics/track'
 
 // Map Stripe price ID to our plan names
 function planFromPrice(priceId: string | undefined): 'core' | 'plus' | 'team' {
@@ -106,6 +107,10 @@ export async function POST(request: Request) {
           console.log('checkout.session.completed (payment): full bundle unlocked', {
             userId,
             rowsUpdated: updateData.length,
+          })
+          await track('purchase_completed', userId, {
+            amount_total: session.amount_total,
+            currency: session.currency,
           })
           break
         }

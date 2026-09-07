@@ -1,9 +1,17 @@
 {
   "framework": "nextjs",
-  "regions": ["syd1"],
+  "regions": [
+    "syd1"
+  ],
   "functions": {
     "src/app/api/documents/generate/route.ts": {
       "maxDuration": 120
     }
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/cron/daily",
+      "schedule": "0 22 * * *"
+    }
+  ]
 }

@@ -63,6 +63,65 @@ export function welcomeEmail(params: {
   }
 }
 
+// ── Lifecycle nudges for free-plan users ──────────────────────
+// Sent by the daily cron to accounts that have not purchased. Each one has a
+// different job: day 2 gets them back to look at what was generated, day 7
+// makes the case for the rest of the set, day 21 is the last one we send.
+
+const appUrl = () => process.env.NEXT_PUBLIC_APP_URL ?? 'https://docsrok.com'
+
+export function nudgeDay2(params: { name: string }) {
+  return {
+    subject: 'Your two documents are ready to use',
+    html: base(`
+      <p>Hi ${params.name || 'there'},</p>
+      <p>Your Standard Operating Procedure and quote template are sitting in your account,
+      written for your business and your trade. They are yours to keep either way.</p>
+      <p>Worth doing once: open the quote template, and use it on the next job you price.
+      That is the fastest way to tell whether this is any good.</p>
+      <a href="${appUrl()}/dashboard" class="cta">Open my documents &rarr;</a>
+    `),
+  }
+}
+
+export function nudgeDay7(params: { name: string }) {
+  return {
+    subject: 'The other 15 documents',
+    html: base(`
+      <p>Hi ${params.name || 'there'},</p>
+      <p>You have two of your documents. The full set adds the other seven core-process
+      SOPs, a quote template for every service you offer, your subcontractor and new-hire
+      welcome pack, and all five business policy documents.</p>
+      <p>It is a one-time $149. No subscription, no monthly fee, and the documents stay
+      yours whether or not you ever log in again.</p>
+      <a href="${appUrl()}/upgrade" class="cta">See what is included &rarr;</a>
+      <hr class="divider" />
+      <p style="font-size:13px; color:#6b7280;">
+        Not interested? Ignore this and we will stop after one more email.
+      </p>
+    `),
+  }
+}
+
+export function nudgeDay21(params: { name: string }) {
+  return {
+    subject: 'Last one from us',
+    html: base(`
+      <p>Hi ${params.name || 'there'},</p>
+      <p>This is the last email we will send about the full document set, so no need to
+      unsubscribe from anything.</p>
+      <p>Your two free documents stay in your account permanently. If you ever want the
+      rest, it is there whenever you need it.</p>
+      <a href="${appUrl()}/upgrade" class="cta">Unlock the full set &rarr;</a>
+      <hr class="divider" />
+      <p style="font-size:13px; color:#6b7280;">
+        If the documents were not useful, replying to this email with one line about why
+        would genuinely help us make them better.
+      </p>
+    `),
+  }
+}
+
 // ── Trial ending soon (send at day 11 or 12) ──────────────────
 
 export function trialEndingEmail(params: {

@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { stripe, STRIPE_PRICES } from '@/lib/stripe/client'
 import { NextResponse } from 'next/server'
+import { track } from '@/lib/analytics/track'
 
 // PIVOT (7 Sept 2026): single one-time purchase, not a monthly plan choice.
 // STRIPE_PRICE_CORE now points at the $149 AUD one-off "Full Bundle" price.
@@ -55,6 +56,8 @@ export async function POST() {
       cancel_url: `${appUrl}/upgrade`,
       metadata: { supabase_user_id: user.id },
     })
+
+    await track('checkout_started', user.id)
 
     return NextResponse.json({ url: session.url })
   } catch (err) {
