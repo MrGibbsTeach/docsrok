@@ -40,8 +40,12 @@ export default function SignupPage() {
       return
     }
 
-    // Supabase will auto-create profile + trial subscription via trigger.
-    // Redirect directly to onboarding (email confirmation disabled in dev).
+    // Supabase auto-creates the profile + subscription rows via trigger.
+    // Email confirmation is off, so /auth/callback never runs for this path:
+    // the welcome email and the signup event have to be fired from here.
+    // Awaited so the session cookie is definitely set before the call.
+    await fetch('/api/auth/welcome', { method: 'POST' }).catch(() => {})
+
     router.push('/onboarding')
     router.refresh()
   }

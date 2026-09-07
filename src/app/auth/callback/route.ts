@@ -1,7 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import { sendEmail } from '@/lib/email/resend'
-import { track } from '@/lib/analytics/track'
-import { welcomeEmail } from '@/lib/email/templates'
+import { completeSignup } from '@/lib/auth/welcome'
 import { NextResponse } from 'next/server'
 
 // Handles the OAuth / magic link / email confirmation callback from Supabase
@@ -15,29 +13,13 @@ export async function GET(request: Request) {
     const { data, error } = await supabase.auth.exchangeCodeForSession(code)
 
     if (!error && data.user) {
-      // Send welcome email if this looks like a new signup (no existing business)
-      const { data: business } = await supabase
-        .from('businesses')
-        .select('id')
-        .eq('user_id', data.user.id)
-        .single()
-
-      if (!business) {
-        await track('signup_completed', data.user.id)
-
-        // New user — welcome email is unconditional now (no trial deadline to check).
-        const fullName =
-          (data.user.user_metadata?.full_name as string | undefined) ?? ''
-
-        const email = welcomeEmail({
-          name: fullName,
-          email: data.user.email!,
-        })
-
-        await sendEmail({
-          to: data.user.email!,
-          subject: email.subject,
-          html: email.html,
+      // Safe to call unconditionally: completeSignup claims the send through a
+      // unique constraint, so if the signup page already did this, it no-ops.
+      if (data.user.email) {
+        await completeSignup({
+          userId: data.user.id,
+          email: data.user.email,
+          fullName: (data.user.user_metadata?.full_name as string | undefined) ?? null,
         })
       }
 
