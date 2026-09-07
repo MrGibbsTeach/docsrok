@@ -7,7 +7,7 @@ import {
   buildQuoteTemplatePrompt,
   buildBusinessPolicyPrompt,
 } from '@/lib/documents/prompts'
-import { PROCESS_TYPES, POLICY_TYPES } from '@/lib/types'
+import { PROCESS_TYPES, POLICY_TYPES, FREE_SOP_KEY } from '@/lib/types'
 
 // The full starter suite is ~24 documents. Give the function room to finish;
 // Vercel silently caps this to the plan maximum if it is lower.
@@ -128,8 +128,40 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Business not found' }, { status: 404 })
     }
 
+    // PIVOT (7 Sept 2026): free tier is permanent (no trial expiry) but limited
+    // to 2 documents. status='active' is what "paid" means everywhere — set by
+    // the Stripe webhook once the $149 one-time bundle is purchased.
+    const { data: subscription } = await supabase
+      .from('subscriptions')
+      .select('status')
+      .eq('user_id', user.id)
+      .single()
+    const isPaid = subscription?.status === 'active'
+
     // ── Single document generation (Add / Regenerate from dashboard) ────
     if (docType) {
+      // Free-tier users may regenerate a document they already have, but may
+      // not use this endpoint to generate a document they haven't unlocked.
+      if (!isPaid) {
+        let existingDocQuery = supabase
+          .from('documents')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('type', docType)
+          .eq('is_current', true)
+        if (activityKey) {
+          existingDocQuery = existingDocQuery.eq('activity_key', activityKey)
+        }
+        const { data: existingDoc } = await existingDocQuery.maybeSingle()
+
+        if (!existingDoc) {
+          return NextResponse.json(
+            { error: 'Upgrade to unlock this document — $149 one-time gets you the full set.' },
+            { status: 402 }
+          )
+        }
+      }
+
       let task: Task
 
       if (docType === 'sop') {
@@ -222,17 +254,18 @@ export async function POST(request: Request) {
     }
 
     // ── Full initial generation ───────────────────────────────────────────
-    // Avoid re-generating if docs already exist
-    const { data: existing } = await supabase
+    // Fetch what already exists so this can also be called again after
+    // payment to generate the remainder — not just once on a blank slate.
+    const { data: existingDocs } = await supabase
       .from('documents')
-      .select('id')
+      .select('type, activity_key')
       .eq('user_id', user.id)
       .eq('is_current', true)
-      .limit(1)
 
-    if (existing && existing.length > 0) {
-      return NextResponse.json({ message: 'Documents already generated' })
-    }
+    const existingKeys = new Set(
+      (existingDocs ?? []).map((d) => `${d.type}::${d.activity_key ?? ''}`)
+    )
+    const hasAnyDocs = existingKeys.size > 0
 
     // Build task list — the full starter suite:
     // 8 core-process SOPs + 1 subcontractor pack + 1 quote template per selected
@@ -268,8 +301,34 @@ export async function POST(request: Request) {
       })),
     ]
 
-    // Generate all documents, capped concurrency with retry/backoff.
-    const results = await settleWithConcurrency(tasks, CONCURRENCY, async (task) => {
+    // Free tier gets exactly one SOP and one quote template — the same two
+    // every time, regardless of how many times this endpoint is called before
+    // payment. Paid accounts get everything not already generated (which, on
+    // the first paid call, is "everything except the free two").
+    const notYetGenerated = tasks.filter(
+      (t) => !existingKeys.has(`${t.type}::${t.activityKey ?? ''}`)
+    )
+
+    if (notYetGenerated.length === 0) {
+      return NextResponse.json({ message: 'Documents already generated' })
+    }
+
+    let tasksToRun: Task[]
+    if (isPaid) {
+      tasksToRun = notYetGenerated
+    } else if (hasAnyDocs) {
+      // Free set already generated at some point — nothing more without payment.
+      return NextResponse.json({
+        message: 'Free plan documents already generated. Upgrade for the full set.',
+      })
+    } else {
+      const freeSop = notYetGenerated.find((t) => t.type === 'sop' && t.activityKey === FREE_SOP_KEY)
+      const freeQuote = notYetGenerated.find((t) => t.type === 'quote_template')
+      tasksToRun = [freeSop, freeQuote].filter((t): t is Task => t !== undefined)
+    }
+
+    // Generate this batch, capped concurrency with retry/backoff.
+    const results = await settleWithConcurrency(tasksToRun, CONCURRENCY, async (task) => {
       const markdown = await callClaude(task.prompt)
       return { ...task, markdown }
     })
@@ -277,7 +336,7 @@ export async function POST(request: Request) {
     const failures: string[] = []
     results.forEach((r, i) => {
       if (r.status === 'rejected') {
-        const label = `${tasks[i].type}${tasks[i].activityKey ? `/${tasks[i].activityKey}` : ''}`
+        const label = `${tasksToRun[i].type}${tasksToRun[i].activityKey ? `/${tasksToRun[i].activityKey}` : ''}`
         failures.push(label)
         console.error(`Failed to generate ${label}:`, r.reason)
       }

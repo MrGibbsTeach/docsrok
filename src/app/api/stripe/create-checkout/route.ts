@@ -2,7 +2,9 @@ import { createClient } from '@/lib/supabase/server'
 import { stripe, STRIPE_PRICES } from '@/lib/stripe/client'
 import { NextResponse } from 'next/server'
 
-export async function POST(request: Request) {
+// PIVOT (7 Sept 2026): single one-time purchase, not a monthly plan choice.
+// STRIPE_PRICE_CORE now points at the $149 AUD one-off "Full Bundle" price.
+export async function POST() {
   try {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -11,12 +13,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { plan } = await request.json() as { plan: 'core' | 'plus' | 'team' }
-
-    const priceId = STRIPE_PRICES[plan]
+    const priceId = STRIPE_PRICES.core
     if (!priceId || priceId.startsWith('price_your')) {
       return NextResponse.json(
-        { error: 'Stripe price not configured. Add STRIPE_PRICE_* to .env.local.' },
+        { error: 'Stripe price not configured. Add STRIPE_PRICE_CORE to .env.local.' },
         { status: 400 }
       )
     }
@@ -49,16 +49,11 @@ export async function POST(request: Request) {
       customer: customerId,
       payment_method_types: ['card'],
       line_items: [{ price: priceId, quantity: 1 }],
-      mode: 'subscription',
+      mode: 'payment',
       allow_promotion_codes: true,
       success_url: `${appUrl}/dashboard?success=true`,
       cancel_url: `${appUrl}/upgrade`,
-      metadata: { supabase_user_id: user.id, plan },
-      // Stamp the Subscription itself too, so later subscription.* webhook
-      // events can find the user even before stripe_subscription_id is stored.
-      subscription_data: {
-        metadata: { supabase_user_id: user.id, plan },
-      },
+      metadata: { supabase_user_id: user.id },
     })
 
     return NextResponse.json({ url: session.url })

@@ -63,12 +63,57 @@ export async function POST(request: Request) {
         const session = event.data.object as Stripe.Checkout.Session
         const userId = session.metadata?.supabase_user_id
 
-        if (!userId || !session.subscription) {
-          console.error('checkout.session.completed: missing userId or subscription', {
-            userId,
-            subscription: session.subscription,
+        if (!userId) {
+          console.error('checkout.session.completed: missing userId', {
             metadata: session.metadata,
           })
+          break
+        }
+
+        // PIVOT (7 Sept 2026): the live product is a one-time $149 purchase
+        // (mode: 'payment'), not a subscription. There is no Stripe subscription
+        // object to retrieve and nothing recurring to track — paying once sets
+        // status='active' permanently, with no current_period_end to expire.
+        if (session.mode === 'payment') {
+          const { error: updateError, data: updateData } = await supabase
+            .from('subscriptions')
+            .update({
+              stripe_customer_id: session.customer as string,
+              plan: 'core',
+              status: 'active',
+              trial_ends_at: null,
+              current_period_end: null,
+            })
+            .eq('user_id', userId)
+            .select()
+
+          if (updateError) {
+            console.error('checkout.session.completed (payment): update failed', {
+              userId,
+              updateError,
+            })
+            return NextResponse.json({ error: 'Subscription update failed' }, { status: 500 })
+          }
+
+          if (!updateData || updateData.length === 0) {
+            console.error(
+              'checkout.session.completed (payment): no subscriptions row matched user_id',
+              { userId }
+            )
+            return NextResponse.json({ error: 'No subscription row for user' }, { status: 500 })
+          }
+
+          console.log('checkout.session.completed (payment): full bundle unlocked', {
+            userId,
+            rowsUpdated: updateData.length,
+          })
+          break
+        }
+
+        // Legacy path — kept in case any old-model subscription checkout is
+        // still in flight. Not reachable from the current /upgrade flow.
+        if (!session.subscription) {
+          console.error('checkout.session.completed: missing subscription', { userId })
           break
         }
 
@@ -97,8 +142,6 @@ export async function POST(request: Request) {
         }
 
         if (!updateData || updateData.length === 0) {
-          // The customer has paid but we have no row to mark active. Return 500
-          // so Stripe retries rather than losing the event silently.
           console.error('checkout.session.completed: no subscriptions row matched user_id', {
             userId,
           })

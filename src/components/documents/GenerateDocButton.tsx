@@ -7,7 +7,7 @@ interface Props {
   activityKey?: string
   docType?: string
   label: string
-  variant?: 'add' | 'regenerate' | 'retry'
+  variant?: 'add' | 'regenerate' | 'retry' | 'unlock'
 }
 
 export default function GenerateDocButton({
@@ -94,6 +94,17 @@ export default function GenerateDocButton({
         className="bg-orange-600 text-white text-sm font-semibold px-5 py-2.5 rounded-lg hover:bg-orange-700 transition-colors"
       >
         Try generating again
+      </button>
+    )
+  }
+
+  if (variant === 'unlock') {
+    return (
+      <button
+        onClick={handleGenerate}
+        className="shrink-0 bg-orange-600 text-white text-sm font-semibold px-4 py-1.5 rounded-lg hover:bg-orange-700 transition-colors whitespace-nowrap"
+      >
+        Generate remaining documents →
       </button>
     )
   }

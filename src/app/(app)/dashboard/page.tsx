@@ -55,18 +55,18 @@ export default async function DashboardPage({
     .eq('user_id', user.id)
     .single()
 
-  // Trial calculations
+  // PIVOT (7 Sept 2026): permanent free tier (2 documents), not a timed trial.
+  // status='active' means the $149 one-time bundle has been purchased.
   const now = Date.now()
-  const trialEnd = subscription?.trial_ends_at
-    ? new Date(subscription.trial_ends_at).getTime()
-    : null
-  const trialDaysLeft = trialEnd
-    ? Math.max(0, Math.ceil((trialEnd - now) / 86_400_000))
-    : null
-  const isTrialing = subscription?.status === 'trialing'
-  const trialExpired = isTrialing && trialDaysLeft === 0
   const isActive = subscription?.status === 'active'
+  const isPaid = isActive
   const isPastDue = subscription?.status === 'past_due'
+
+  const totalPossibleDocs =
+    PROCESS_TYPES.length + 1 /* subcontractor pack */ +
+    (business.work_activities as string[]).length +
+    POLICY_TYPES.length
+  const moreToUnlock = isPaid && documents.length > 0 && documents.length < totalPossibleDocs
 
   // Document generation is fired and forgotten immediately after onboarding.
   // If it failed (Anthropic outage, exhausted credits, rate limit, function
@@ -86,7 +86,7 @@ export default async function DashboardPage({
       {/* Payment success banner */}
       {params.success && (
         <div className="bg-green-50 border border-green-200 text-green-800 text-sm px-4 py-3 rounded-lg">
-          ✓ Payment confirmed — you&apos;re now on the {subscription?.plan} plan.
+          ✓ Payment confirmed — your full document set is unlocked.
         </div>
       )}
 
@@ -105,33 +105,28 @@ export default async function DashboardPage({
         </div>
       )}
 
-      {/* Trial expired banner */}
-      {trialExpired && (
-        <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-3 flex items-center justify-between gap-4">
-          <p className="text-sm text-red-800 font-medium">
-            Your free trial has ended. Upgrade to keep accessing your documents.
+      {/* Free plan banner — permanent, not a countdown */}
+      {!isPaid && (
+        <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 flex items-center justify-between gap-4">
+          <p className="text-sm text-amber-800">
+            You&apos;re on the <span className="font-semibold">Free plan</span> — 2 documents included.
           </p>
           <a
             href="/upgrade"
-            className="shrink-0 bg-red-700 text-white text-sm font-semibold px-4 py-1.5 rounded-lg hover:bg-red-800 transition-colors"
+            className="shrink-0 bg-amber-700 text-white text-sm font-semibold px-4 py-1.5 rounded-lg hover:bg-amber-800 transition-colors"
           >
-            Upgrade now
+            Unlock all documents — $149 →
           </a>
         </div>
       )}
 
-      {/* Trial running banner */}
-      {isTrialing && !trialExpired && trialDaysLeft !== null && (
-        <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 flex items-center justify-between gap-4">
-          <p className="text-sm text-amber-800">
-            <span className="font-semibold">{trialDaysLeft} day{trialDaysLeft !== 1 ? 's' : ''} left</span> in your free trial.
+      {/* Paid but the full set hasn't been generated yet */}
+      {moreToUnlock && (
+        <div className="bg-orange-50 border border-orange-200 rounded-lg px-4 py-3 flex items-center justify-between gap-4">
+          <p className="text-sm text-orange-800">
+            You&apos;re on <span className="font-semibold">Full Access</span> — {documents.length} of {totalPossibleDocs} documents generated so far.
           </p>
-          <a
-            href="/upgrade"
-            className="shrink-0 text-sm font-semibold text-amber-800 underline hover:text-amber-900"
-          >
-            Upgrade →
-          </a>
+          <GenerateDocButton label="the rest of your documents" variant="unlock" />
         </div>
       )}
 
@@ -286,13 +281,17 @@ export default async function DashboardPage({
                         View
                       </a>
                     </div>
-                  ) : (
+                  ) : isPaid ? (
                     <GenerateDocButton
                       activityKey={process.key}
                       docType="sop"
                       label={process.label}
                       variant="add"
                     />
+                  ) : (
+                    <span className="shrink-0 text-xs text-gray-400" title="Unlock all documents for $149">
+                      🔒 Unlock to generate
+                    </span>
                   )}
                 </div>
               )
@@ -342,13 +341,17 @@ export default async function DashboardPage({
                         View
                       </a>
                     </div>
-                  ) : (
+                  ) : isPaid ? (
                     <GenerateDocButton
                       activityKey={jobKey}
                       docType="quote_template"
                       label={label}
                       variant="add"
                     />
+                  ) : (
+                    <span className="shrink-0 text-xs text-gray-400" title="Unlock all documents for $149">
+                      🔒 Unlock to generate
+                    </span>
                   )}
                 </div>
               )
@@ -397,13 +400,17 @@ export default async function DashboardPage({
                         View
                       </a>
                     </div>
-                  ) : (
+                  ) : isPaid ? (
                     <GenerateDocButton
                       activityKey={policy.key}
                       docType="business_policy"
                       label={policy.label}
                       variant="add"
                     />
+                  ) : (
+                    <span className="shrink-0 text-xs text-gray-400" title="Unlock all documents for $149">
+                      🔒 Unlock to generate
+                    </span>
                   )}
                 </div>
               )

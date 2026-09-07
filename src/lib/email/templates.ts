@@ -36,29 +36,24 @@ const base = (content: string) => `
 
 // ── Welcome email ─────────────────────────────────────────────
 
+// PIVOT (7 Sept 2026): no more timed trial — 2 free documents, permanently,
+// then a $149 one-time purchase for the rest. trialEndsAt param removed.
 export function welcomeEmail(params: {
   name: string
   email: string
-  trialEndsAt: string
 }) {
-  const trialDate = new Date(params.trialEndsAt).toLocaleDateString('en-AU', {
-    day: 'numeric', month: 'long', year: 'numeric',
-  })
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://docsrok.com.au'
 
   return {
-    subject: 'Your Docs Rok trial has started',
+    subject: 'Your Docs Rok documents are ready',
     html: base(`
       <p>Hi ${params.name || 'there'},</p>
-      <p>Welcome to Docs Rok. Your 14-day free trial is now active — no credit card required until ${trialDate}.</p>
-      <p>Your business documents have been generated and are ready to view:</p>
-      <ul class="list">
-        <li>Standard Operating Procedures (SOPs) — customised to your business</li>
-        <li>Subcontractor &amp; new-hire welcome pack</li>
-        <li>Quote / proposal templates</li>
-        <li>Business policy documents</li>
-      </ul>
+      <p>Welcome to Docs Rok. Your first two documents are ready to view, free — no credit card required.</p>
+      <p>We've generated one Standard Operating Procedure and one quote/proposal template,
+      customised to your business:</p>
       <a href="${appUrl}/dashboard" class="cta">View my documents →</a>
+      <p>Want the full set — the remaining SOPs, subcontractor pack, and every business policy
+      document? Unlock everything for a one-time $149, no subscription.</p>
       <hr class="divider" />
       <p style="font-size:13px; color:#6b7280;">
         These are business templates and starting points — review and adapt each one to your

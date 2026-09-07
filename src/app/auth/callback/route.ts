@@ -22,29 +22,20 @@ export async function GET(request: Request) {
         .single()
 
       if (!business) {
-        // New user — get their trial end date
-        const { data: subscription } = await supabase
-          .from('subscriptions')
-          .select('trial_ends_at')
-          .eq('user_id', data.user.id)
-          .single()
-
+        // New user — welcome email is unconditional now (no trial deadline to check).
         const fullName =
           (data.user.user_metadata?.full_name as string | undefined) ?? ''
 
-        if (subscription?.trial_ends_at) {
-          const email = welcomeEmail({
-            name: fullName,
-            email: data.user.email!,
-            trialEndsAt: subscription.trial_ends_at,
-          })
+        const email = welcomeEmail({
+          name: fullName,
+          email: data.user.email!,
+        })
 
-          await sendEmail({
-            to: data.user.email!,
-            subject: email.subject,
-            html: email.html,
-          })
-        }
+        await sendEmail({
+          to: data.user.email!,
+          subject: email.subject,
+          html: email.html,
+        })
       }
 
       return NextResponse.redirect(`${origin}${next}`)

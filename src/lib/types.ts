@@ -127,18 +127,31 @@ export const STATE_WHS_ACT: Partial<Record<State, string>> = {
   NSW: 'Work Health and Safety Act 2011 (NSW)',
 }
 
+// PIVOT (7 Sept 2026): moved from a 14-day timed trial + $79/mo subscription to a
+// permanent free tier + one-time purchase. 'trial'/'core' are kept as the underlying
+// plan values (no DB enum migration needed) but now mean "free" and "paid" respectively.
+// A subscription row with status='active' is what "paid" means everywhere in the app —
+// see isPaid checks in the dashboard and documents/generate route.
 export const PLAN_LABELS: Record<Plan, string> = {
-  trial: 'Free Trial',
-  core: 'Core',
-  plus: 'Plus',
-  team: 'Team',
+  trial: 'Free',
+  core: 'Full Access',
+  plus: 'Full Access',
+  team: 'Full Access',
 }
 
+// core is now a one-time AUD price, not monthly. plus/team are unused by the
+// current UI (kept only so this type doesn't need every call site touched).
 export const PLAN_PRICES: Record<Exclude<Plan, 'trial'>, number> = {
-  core: 79,
-  plus: 129,
-  team: 199,
+  core: 149,
+  plus: 149,
+  team: 149,
 }
+
+// The free tier includes exactly one SOP and one quote template, chosen to be
+// the single most useful document in each category. Everything else — the
+// remaining 7 SOPs, subcontractor pack, other quote templates, and all 5
+// policies — is unlocked by the one-time $149 purchase.
+export const FREE_SOP_KEY = 'job_intake_and_quoting' as const
 
 // Documents included in each plan
 export const DOCUMENT_LABELS: Record<DocumentType, string> = {
