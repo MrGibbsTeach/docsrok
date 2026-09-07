@@ -54,7 +54,7 @@ export default function SignupPage() {
             Docs Rok
           </Link>
           <h2 className="mt-4 text-2xl font-semibold text-gray-900">
-            Start your free 14-day trial
+            Get your first two documents free
           </h2>
           <p className="mt-2 text-sm text-gray-600">
             Already have an account?{' '}
@@ -130,7 +130,7 @@ export default function SignupPage() {
             </button>
 
             <p className="text-xs text-center text-gray-500">
-              No credit card required · 14-day free trial · Cancel anytime
+              No credit card required · 2 documents free · No subscription
             </p>
           </form>
         </div>

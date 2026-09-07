@@ -88,7 +88,7 @@ export default function PrivacyPage() {
               <li><strong>Providing the service</strong> — generating business-operations documents customised to your business</li>
               <li><strong>Account management</strong> — creating and maintaining your account, authentication, and access control</li>
               <li><strong>Billing and payments</strong> — processing subscriptions and managing your billing through Stripe</li>
-              <li><strong>Transactional emails</strong> — sending account confirmation, trial reminders, and payment receipts via Resend</li>
+              <li><strong>Transactional emails</strong> — sending account confirmation and payment receipts via Resend</li>
               <li><strong>Service improvements</strong> — understanding how users interact with the platform to improve features</li>
               <li><strong>Legal compliance</strong> — meeting our obligations under applicable Australian law</li>
             </ul>
@@ -140,7 +140,7 @@ export default function PrivacyPage() {
               <div className="bg-gray-50 rounded-lg p-4">
                 <div className="font-semibold text-gray-800">Resend (Transactional Email)</div>
                 <div className="text-gray-600 mt-1">
-                  We use Resend to send account confirmation, trial expiry, and payment confirmation
+                  We use Resend to send account confirmation and payment confirmation
                   emails. Your email address is shared with Resend solely for this purpose.
                 </div>
                 <div className="mt-1"><a href="https://resend.com/privacy" className="text-orange-600 hover:underline" target="_blank" rel="noopener noreferrer">resend.com/privacy</a></div>

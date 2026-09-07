@@ -36,7 +36,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-lg font-semibold text-gray-900 mb-3">1. Agreement to terms</h2>
             <p>
-              By creating an account with Docs Rok (&ldquo;we&rdquo;, &ldquo;us&rdquo;, &ldquo;our&rdquo;), you (&ldquo;you&rdquo;, &ldquo;the subscriber&rdquo;)
+              By creating an account with Docs Rok (&ldquo;we&rdquo;, &ldquo;us&rdquo;, &ldquo;our&rdquo;), you (&ldquo;you&rdquo;, &ldquo;the customer&rdquo;)
               agree to be bound by these Terms of Service (&ldquo;Terms&rdquo;). If you do not agree, do not
               use the service.
             </p>
@@ -106,73 +106,49 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">5. Free trial</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-3">5. Free plan</h2>
             <p>
-              New accounts receive a 14-day free trial. No credit card is required to start a trial.
-              At the end of the trial period, your account will be restricted until you subscribe to
-              a paid plan. Documents you generated during the trial remain accessible once you subscribe.
+              New accounts include two documents free of charge: one Standard Operating Procedure
+              and one quote/proposal template, both generated for your business. No credit card is
+              required and there is no time limit. These documents remain available in your account
+              whether or not you go on to purchase Full Access.
             </p>
           </section>
 
           <section>
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">6. Subscription and billing</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-3">6. Full Access purchase</h2>
             <p>
-              Paid subscriptions are billed monthly in advance in Australian Dollars (AUD).
-              GST (10%) is added where applicable under Australian tax law.
-            </p>
-            <p className="mt-3">Current subscription plans:</p>
-            <div className="overflow-x-auto mt-3">
-              <table className="w-full border border-gray-200 rounded-lg overflow-hidden text-xs">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="text-left p-3 font-semibold text-gray-700">Plan</th>
-                    <th className="text-left p-3 font-semibold text-gray-700">Price (ex-GST)</th>
-                    <th className="text-left p-3 font-semibold text-gray-700">Features</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  <tr>
-                    <td className="p-3 font-medium">Core</td>
-                    <td className="p-3">$79 AUD/month</td>
-                    <td className="p-3">SOPs for your key processes, quote templates, any Australian state</td>
-                  </tr>
-                  <tr>
-                    <td className="p-3 font-medium">Plus</td>
-                    <td className="p-3">$129 AUD/month</td>
-                    <td className="p-3">Core + subcontractor welcome packs, all business policy documents</td>
-                  </tr>
-                  <tr>
-                    <td className="p-3 font-medium">Team</td>
-                    <td className="p-3">$199 AUD/month</td>
-                    <td className="p-3">Plus + up to 5 team members, multiple business profiles</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <p className="mt-3">
-              Payments are processed by Stripe, Inc. By subscribing, you authorise Stripe to charge
-              your payment method on a recurring monthly basis until you cancel.
+              Full Access is a one-time purchase of $149 AUD (ex-GST) that unlocks generation of your
+              complete document set: all core-process Standard Operating Procedures, a quote/proposal
+              template for each service you offer, a subcontractor and new-hire welcome pack, and all
+              business policy documents. GST (10%) is added where applicable under Australian tax law.
             </p>
             <p className="mt-3">
-              We reserve the right to change pricing with 30 days&rsquo; notice by email. Price changes
-              take effect at your next renewal date after the notice period.
+              This is not a subscription. There is no recurring charge, no billing cycle, and nothing
+              to cancel. Payment is processed by Stripe, Inc. as a single transaction. Your access and
+              your generated documents do not expire.
+            </p>
+            <p className="mt-3">
+              We reserve the right to change the price of Full Access at any time. A change in price
+              does not affect a purchase already completed.
             </p>
           </section>
 
           <section>
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">7. Cancellation and refunds</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-3">7. Refunds</h2>
             <p>
-              You may cancel your subscription at any time from your account dashboard (Manage billing).
-              Cancellation takes effect at the end of your current billing period — you retain access
-              until then.
+              Full Access is delivered immediately on payment, and your documents are generated on
+              demand at real cost to us. For that reason we do not offer change-of-mind refunds once
+              your full document set has been generated. The free plan exists so you can see the
+              actual quality and format of our documents, generated for your own business, before
+              you decide to pay anything.
             </p>
             <p className="mt-3">
-              We do not offer refunds for partial months. If you cancel mid-cycle, you retain access
-              until the period ends and will not be charged again.
-            </p>
-            <p className="mt-3">
-              Exceptions may be considered at our discretion for billing errors or technical failures
-              that prevented access to the service. Contact{' '}
+              Nothing in these terms excludes, restricts or modifies the consumer guarantees under the
+              Australian Consumer Law. If the service fails to meet a consumer guarantee, you are
+              entitled to a remedy under that law, which may include a refund. We will also consider
+              refunds at our discretion for billing errors or technical failures that prevented
+              delivery. Contact{' '}
               <a href="mailto:support@docsrok.com.au" className="text-orange-600 hover:underline">support@docsrok.com.au</a>.
             </p>
           </section>

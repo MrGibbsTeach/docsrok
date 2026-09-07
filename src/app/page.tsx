@@ -61,46 +61,36 @@ const HOW_IT_WORKS = [
 
 const PLANS = [
   {
-    name: 'Core',
-    price: 79,
-    desc: 'For sole traders and small crews.',
+    name: 'Free',
+    price: 0,
+    priceNote: 'forever',
+    desc: 'See the real thing before you pay anything.',
     features: [
-      'SOPs for your key processes',
-      'Quote/proposal templates',
-      'Any Australian state',
-      'Customised to your trade',
+      'One Standard Operating Procedure',
+      'One quote / proposal template',
+      'Customised to your trade and state',
       'Print-to-PDF download',
+      'No credit card, no time limit',
+    ],
+    cta: 'Start free',
+    highlight: false,
+  },
+  {
+    name: 'Full Access',
+    price: 149,
+    priceNote: 'one-time',
+    desc: 'Your complete document set. Pay once, keep it.',
+    features: [
+      'All 8 core-process SOPs',
+      'Quote templates for every service you offer',
+      'Subcontractor and new-hire welcome pack',
+      'All 5 business policy documents',
+      'Regenerate any document, any time',
+      'No subscription, no monthly fee',
       'Email support',
     ],
-    cta: 'Start free trial',
-    highlight: false,
-  },
-  {
-    name: 'Plus',
-    price: 129,
-    desc: 'For growing businesses.',
-    features: [
-      'Everything in Core',
-      'Subcontractor welcome packs',
-      'All business policy documents',
-      'Regenerate documents any time',
-      'Priority email support',
-    ],
-    cta: 'Start free trial',
+    cta: 'Get full access',
     highlight: true,
-  },
-  {
-    name: 'Team',
-    price: 199,
-    desc: 'For larger businesses and subcontractors.',
-    features: [
-      'Everything in Plus',
-      'Up to 5 team members',
-      'Multiple business profiles',
-      'Dedicated support',
-    ],
-    cta: 'Start free trial',
-    highlight: false,
   },
 ]
 
@@ -126,8 +116,12 @@ const FAQS = [
     a: 'Generic SOP tools don\'t know anything about your trade. Docs Rok generates SOPs, subcontractor packs, quotes, and policies together, tailored to your specific trade and the services you actually offer — not a one-size-fits-all template.',
   },
   {
-    q: 'Is there a contract? Can I cancel?',
-    a: 'No contract. Cancel any time from your account settings. Your 14-day free trial requires no credit card.',
+    q: 'What do I get for free?',
+    a: 'One Standard Operating Procedure and one quote/proposal template, both fully generated and customised to your business. No credit card, and no time limit on them. You only pay if you want the rest of the set.',
+  },
+  {
+    q: 'Is it a subscription?',
+    a: 'No. Full Access is a single $149 payment for your complete document set. There is no monthly fee, no contract, and nothing to cancel. Your documents stay in your account and you can regenerate any of them whenever your business changes.',
   },
 ]
 
@@ -147,7 +141,7 @@ export default function HomePage() {
               href="/signup"
               className="text-sm bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors font-medium"
             >
-              Start free trial
+              Start free
             </Link>
           </div>
         </div>
@@ -173,7 +167,7 @@ export default function HomePage() {
               href="/signup"
               className="bg-orange-600 text-white text-base font-semibold px-8 py-3.5 rounded-xl hover:bg-orange-700 transition-colors"
             >
-              Start 14-day free trial
+              Start free
             </Link>
             <Link
               href="#how-it-works"
@@ -182,7 +176,9 @@ export default function HomePage() {
               See how it works
             </Link>
           </div>
-          <p className="text-xs text-gray-400 mt-4">No credit card required. Cancel any time.</p>
+          <p className="text-xs text-gray-400 mt-4">
+            Two documents free, no credit card. Full set is a one-time $149.
+          </p>
         </div>
       </section>
 
@@ -193,7 +189,7 @@ export default function HomePage() {
           <span>✓ All states</span>
           <span>✓ 4 document types</span>
           <span>✓ Fully editable</span>
-          <span>✓ Under 60 seconds</span>
+          <span>✓ 2 documents free</span>
         </div>
       </div>
 
@@ -291,7 +287,7 @@ export default function HomePage() {
               href="/signup"
               className="inline-block bg-orange-600 text-white font-semibold px-8 py-3.5 rounded-xl hover:bg-orange-700 transition-colors"
             >
-              Start free trial — no credit card
+              Start free, no credit card
             </Link>
           </div>
         </div>
@@ -301,12 +297,13 @@ export default function HomePage() {
       <section id="pricing" className="bg-gray-50 py-20 px-4 sm:px-6">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold text-gray-900 text-center mb-4">
-            Straightforward pricing
+            Pay once. Keep your documents.
           </h2>
           <p className="text-gray-500 text-center mb-12">
-            14-day free trial. No credit card required. Cancel any time.
+            Start with two documents free. Unlock the full set for a single payment.
+            No subscription, no contract.
           </p>
-          <div className="grid sm:grid-cols-3 gap-6">
+          <div className="grid sm:grid-cols-2 gap-6 max-w-3xl mx-auto">
             {PLANS.map((plan) => (
               <div
                 key={plan.name}
@@ -324,7 +321,9 @@ export default function HomePage() {
                 </div>
                 <div className={`text-3xl font-extrabold mb-1 ${plan.highlight ? 'text-white' : 'text-gray-900'}`}>
                   ${plan.price}
-                  <span className={`text-base font-normal ${plan.highlight ? 'text-orange-100' : 'text-gray-400'}`}>/mo AUD</span>
+                  <span className={`text-base font-normal ${plan.highlight ? 'text-orange-100' : 'text-gray-400'}`}>
+                    {' '}{plan.priceNote} {plan.price > 0 ? 'AUD' : ''}
+                  </span>
                 </div>
                 <div className={`text-sm mb-5 ${plan.highlight ? 'text-orange-100' : 'text-gray-500'}`}>
                   {plan.desc}
@@ -351,7 +350,7 @@ export default function HomePage() {
             ))}
           </div>
           <p className="text-center text-sm text-gray-400 mt-6">
-            All prices in AUD, ex-GST.
+            Price in AUD, ex-GST. One payment, not a subscription.
           </p>
         </div>
       </section>
@@ -380,14 +379,14 @@ export default function HomePage() {
             Get your business paperwork sorted today
           </h2>
           <p className="text-orange-100 mb-8 text-lg">
-            Start your 14-day free trial. No credit card. No contract.
-            Australian trade businesses — up and running in minutes.
+            Start with two documents free, no credit card. Unlock the full set
+            whenever you are ready, for a one-time $149.
           </p>
           <Link
             href="/signup"
             className="inline-block bg-white text-orange-600 font-bold text-base px-10 py-4 rounded-xl hover:bg-orange-50 transition-colors"
           >
-            Start free trial
+            Start free
           </Link>
         </div>
       </section>
@@ -406,7 +405,7 @@ export default function HomePage() {
               <div className="space-y-1 text-xs">
                 <div><Link href="/#how-it-works" className="hover:text-white transition-colors">How it works</Link></div>
                 <div><Link href="/#pricing" className="hover:text-white transition-colors">Pricing</Link></div>
-                <div><Link href="/signup" className="hover:text-white transition-colors">Start free trial</Link></div>
+                <div><Link href="/signup" className="hover:text-white transition-colors">Start free</Link></div>
               </div>
             </div>
             <div>
