@@ -1,5 +1,13 @@
 import { redirect } from 'next/navigation'
+import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
+
+// Every page in this group is per-account and behind a login. robots.txt already
+// disallows them, but a noindex header is what actually keeps a page out of the
+// index if it ever gets linked from somewhere a crawler already trusts.
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+}
 
 // All routes inside (app)/ require authentication.
 // Middleware handles the redirect, but this is a belt-and-suspenders server check.

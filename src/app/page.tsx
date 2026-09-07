@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { SITE_NAME, SITE_URL } from '@/lib/site'
 
 export const metadata: Metadata = {
   title: 'Docs Rok — Business Paperwork for Australian Trades',
@@ -125,9 +126,62 @@ const FAQS = [
   },
 ]
 
+// Built from the same constants the page renders below, so the structured data
+// cannot drift away from what a visitor actually sees — which is exactly what
+// Google penalises FAQ markup for.
+function structuredData() {
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Organization',
+        '@id': `${SITE_URL}/#organization`,
+        name: SITE_NAME,
+        url: SITE_URL,
+        description: 'Business paperwork for Australian trade businesses.',
+        areaServed: { '@type': 'Country', name: 'Australia' },
+      },
+      {
+        '@type': 'WebSite',
+        '@id': `${SITE_URL}/#website`,
+        url: SITE_URL,
+        name: SITE_NAME,
+        publisher: { '@id': `${SITE_URL}/#organization` },
+        inLanguage: 'en-AU',
+      },
+      {
+        '@type': 'Product',
+        name: 'Docs Rok Full Bundle',
+        description:
+          'The complete business document set for an Australian trade business: standard operating procedures, quote and proposal templates, a subcontractor and new-hire welcome pack, and business policy documents, all customised to the trade and state.',
+        brand: { '@id': `${SITE_URL}/#organization` },
+        offers: {
+          '@type': 'Offer',
+          price: '149.00',
+          priceCurrency: 'AUD',
+          availability: 'https://schema.org/InStock',
+          url: `${SITE_URL}/#pricing`,
+        },
+      },
+      {
+        '@type': 'FAQPage',
+        mainEntity: FAQS.map((faq) => ({
+          '@type': 'Question',
+          name: faq.q,
+          acceptedAnswer: { '@type': 'Answer', text: faq.a },
+        })),
+      },
+    ],
+  }
+}
+
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData()) }}
+      />
 
       {/* Nav */}
       <nav className="border-b border-gray-100 bg-white sticky top-0 z-10">
