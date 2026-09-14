@@ -13,7 +13,9 @@ import { track } from '@/lib/analytics/track'
  *
  * Idempotent: the send is claimed through the unique constraint on email_log,
  * so calling this from both the signup page and the auth callback is safe, and
- * so is a retry.
+ * so is a retry. If the actual send fails, the claim is released so the next
+ * call (next login, a manual retry) can pick it back up instead of the email
+ * being silently and permanently lost.
  */
 export async function completeSignup(params: {
   userId: string
@@ -40,7 +42,11 @@ export async function completeSignup(params: {
   await track('signup_completed', userId)
 
   const mail = welcomeEmail({ name: fullName ?? '', email })
-  await sendEmail({ to: email, subject: mail.subject, html: mail.html })
+  const sent = await sendEmail({ to: email, subject: mail.subject, html: mail.html })
+
+  if (!sent) {
+    await supabase.from('email_log').delete().eq('user_id', userId).eq('template', 'welcome')
+  }
 
   return { firstTime: true }
 }

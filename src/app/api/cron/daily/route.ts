@@ -112,8 +112,15 @@ export async function GET(request: Request) {
       if (claimError) continue
 
       const email = nudge.build({ name: firstName(profile.full_name, profile.email) })
-      await sendEmail({ to: profile.email, subject: email.subject, html: email.html })
-      count++
+      const ok = await sendEmail({ to: profile.email, subject: email.subject, html: email.html })
+
+      if (ok) {
+        count++
+      } else {
+        // Delivery failed — release the claim so tomorrow's run retries this
+        // user instead of the send being silently and permanently lost.
+        await supabase.from('email_log').delete().eq('user_id', row.user_id).eq('template', nudge.template)
+      }
     }
 
     if (count > 0) sent[nudge.template] = count
