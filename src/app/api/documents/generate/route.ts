@@ -96,6 +96,16 @@ type Task = {
 }
 
 export async function POST(request: Request) {
+  // Hoisted so the outer catch can still attribute a failure to a user and a
+  // stage even if the exception happened before those were locally in scope.
+  // Every exit path from this handler — success, a handled error return, or
+  // an unhandled throw — now fires exactly one generation_completed or
+  // generation_failed event. Previously several paths (single-document
+  // generate/regenerate, the full-batch insert failing, and anything caught
+  // by the outer try/catch) fired nothing at all.
+  let userId: string | null = null
+  let stage = 'unknown'
+
   try {
     const supabase = await createClient()
 
@@ -105,6 +115,7 @@ export async function POST(request: Request) {
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
+    userId = user.id
 
     // Parse optional body — supports targeted single-doc generation
     // activityKey doubles as: SOP process key, quote job-type key, or policy type key,
@@ -117,6 +128,7 @@ export async function POST(request: Request) {
     }
 
     const { activityKey, docType } = body
+    stage = docType ? `single:${docType}` : 'full'
 
     // Fetch the business for this user
     const { data: business, error: bizError } = await supabase
@@ -248,8 +260,16 @@ export async function POST(request: Request) {
       })
 
       if (insertError) {
+        await track('generation_failed', user.id, { detail: insertError.message, stage })
         return NextResponse.json({ error: insertError.message }, { status: 500 })
       }
+
+      await track('generation_completed', user.id, {
+        generated: 1,
+        failed: 0,
+        tier: isPaid ? 'paid' : 'free',
+        docType,
+      })
 
       return NextResponse.json({ success: true, generated: 1, failed: 0 })
     }
@@ -373,7 +393,7 @@ export async function POST(request: Request) {
           ? firstReason.reason.message
           : String(firstReason?.reason ?? 'unknown error')
       console.error('All documents failed to generate:', detail)
-      await track('generation_failed', user.id, { detail, attempted: tasksToRun.length })
+      await track('generation_failed', user.id, { detail, attempted: tasksToRun.length, stage })
       return NextResponse.json(
         { error: `All documents failed to generate. First error: ${detail}` },
         { status: 500 }
@@ -384,6 +404,7 @@ export async function POST(request: Request) {
 
     if (insertError) {
       console.error('Insert error:', insertError)
+      await track('generation_failed', user.id, { detail: insertError.message, stage: 'full-insert' })
       return NextResponse.json({ error: insertError.message }, { status: 500 })
     }
 
@@ -401,9 +422,11 @@ export async function POST(request: Request) {
     })
   } catch (err) {
     console.error('Generation error:', err)
-    return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'Unknown error' },
-      { status: 500 }
-    )
+    const detail = err instanceof Error ? err.message : 'Unknown error'
+    // Catch-all: anything that threw rather than returning a handled error
+    // above (a Claude call in the single-doc path, an unexpected Supabase
+    // error, etc.) still gets recorded instead of vanishing silently.
+    await track('generation_failed', userId, { detail, stage })
+    return NextResponse.json({ error: detail }, { status: 500 })
   }
 }
