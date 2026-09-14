@@ -150,17 +150,27 @@ function structuredData() {
         inLanguage: 'en-AU',
       },
       {
-        '@type': 'Product',
-        name: 'Docs Rok Full Bundle',
+        // SoftwareApplication rather than Product. Product markup put this page
+        // into Google's Merchant listings validation, which demands image,
+        // shippingDetails and hasMerchantReturnPolicy: fields that mean nothing
+        // for a web app and would sit there as a permanent red error.
+        // SoftwareApplication is what this actually is, and still carries price.
+        '@type': 'SoftwareApplication',
+        name: 'Docs Rok',
+        applicationCategory: 'BusinessApplication',
+        operatingSystem: 'Web',
+        url: SITE_URL,
+        image: `${SITE_URL}/opengraph-image`,
         description:
-          'The complete business document set for an Australian trade business: standard operating procedures, quote and proposal templates, a subcontractor and new-hire welcome pack, and business policy documents, all customised to the trade and state.',
-        brand: { '@id': `${SITE_URL}/#organization` },
+          'Generates the complete business document set for an Australian trade business: standard operating procedures, quote and proposal templates, a subcontractor and new-hire welcome pack, and business policy documents, all customised to the trade and state.',
+        publisher: { '@id': `${SITE_URL}/#organization` },
         offers: {
           '@type': 'Offer',
           price: '149.00',
           priceCurrency: 'AUD',
           availability: 'https://schema.org/InStock',
           url: `${SITE_URL}/#pricing`,
+          description: 'One-time purchase. Two documents are free with no charge.',
         },
       },
       {
