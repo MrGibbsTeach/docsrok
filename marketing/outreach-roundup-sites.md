@@ -16,14 +16,14 @@ back, then send the rest with whatever you learned.
 
 | Site | The article to target | Why Docs Rok fits |
 |---|---|---|
-| saferoutcomes.com.au | "101 Free Tools For Australian Tradies" | **Best target.** It is a free-tools list and Docs Rok has a real free tier, not a trial. |
-| melbourneaiagents.com.au | "Top AI Tools for Australian Tradies" | AI angle is the whole product. Not a competitor to them. |
-| chippieapp.com | "12 AI and Emerging Tools for Australian Tradies" | Same AI-tools angle. They sell an app, so a softer prospect. |
-| tradepage.com.au | "Tradie Resources: Tools, Templates and Guides" | A templates page. Docs Rok is literally templates. |
-| backontools.com.au | "Best Apps for Tradies in Australia" | Broad tools roundup, room for a paperwork entry. |
-| tradiescaler.com | "Best WHS Software" / "Best SWMS Software" | Adjacent rather than exact. Worth a try, low odds while you are not selling compliance documents. |
-| stackpick.com.au | ServiceM8 and Tradify reviews | Reviews job-management tools. Pitch as complementary, not a rival. |
-| tradieautomate.com | Job management software roundups | Same as above. |
+| ~~saferoutcomes.com.au~~ | ~~"101 Free Tools For Australian Tradies"~~ | **Skipped (17 Sept 2026).** They sell WHS/SWMS compliance documents directly — a document seller has no real incentive to send traffic to another document seller, invitation or not. Don't send. |
+| melbourneaiagents.com.au | "Top AI Tools for Australian Tradies" | AI angle is the whole product. Not a competitor to them. Promoted to first four. |
+| chippieapp.com | "12 AI and Emerging Tools for Australian Tradies" | Same AI-tools angle. They sell an app, so a softer prospect. In first four. |
+| tradepage.com.au | "Tradie Resources: Tools, Templates and Guides" | A templates page. Docs Rok is literally templates. In first four. |
+| ~~backontools.com.au~~ | ~~"Best Apps for Tradies in Australia"~~ | **Checked 17 Sept 2026 and dropped.** No such roundup article exists — it's a vendor site selling its own job-management software. Verify a site's current content before sending, don't trust older research. |
+| tradiescaler.com | "Best WHS Software" / "Best SWMS Software" | Adjacent rather than exact. Same compliance-adjacency concern as Safe-R Outcomes, though they review software rather than sell documents. Low priority. |
+| stackpick.com.au | ServiceM8 and Tradify reviews, "Tradies & Builders" section | Verified 17 Sept 2026: independent affiliate review site, sells nothing of its own. Promoted to first four. |
+| tradieautomate.com | Job management software roundups | Same profile as StackPick — worth checking next if the first four go quiet. |
 | itrade.net | "ServiceM8 Alternatives" | Weaker fit. Only if you have spare time. |
 | servicescale.com.au | "Best Quoting Software for Tradies" | You generate quote templates, not quoting software. Be honest about the difference or it reads as spam. |
 
@@ -31,6 +31,13 @@ Be aware several of these sites sell their own tradie product. They are more
 likely to add you if you are clearly not competing with them, which is true for
 the job-management and quoting apps: Docs Rok writes the documents, it does not
 run the jobs. Say so.
+
+Also be aware some sell documents rather than software — those (Safe-R
+Outcomes, and anything similar found later) are worse targets than a software
+vendor, not better, however open their submission process looks: it's the
+same customer wallet and the same shelf, and they know it. Verify what a site
+actually is before adding it to a send list — a roundup article seen once in
+earlier research can quietly disappear (see BackOnTools).
 
 ---
 

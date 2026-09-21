@@ -198,6 +198,9 @@ export default function HomePage() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
           <span className="text-orange-600 font-bold text-lg tracking-tight">Docs Rok</span>
           <div className="flex items-center gap-4">
+            <Link href="/resources" className="text-sm text-gray-500 hover:text-gray-800 transition-colors hidden sm:inline">
+              Resources
+            </Link>
             <Link href="/login" className="text-sm text-gray-500 hover:text-gray-800 transition-colors">
               Sign in
             </Link>
@@ -468,6 +471,7 @@ export default function HomePage() {
               <div className="text-gray-300 font-medium mb-2">Product</div>
               <div className="space-y-1 text-xs">
                 <div><Link href="/#how-it-works" className="hover:text-white transition-colors">How it works</Link></div>
+                <div><Link href="/resources" className="hover:text-white transition-colors">Resources</Link></div>
                 <div><Link href="/#pricing" className="hover:text-white transition-colors">Pricing</Link></div>
                 <div><Link href="/signup" className="hover:text-white transition-colors">Start free</Link></div>
               </div>
