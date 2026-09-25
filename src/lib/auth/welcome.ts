@@ -41,7 +41,7 @@ export async function completeSignup(params: {
 
   await track('signup_completed', userId)
 
-  const mail = welcomeEmail({ name: fullName ?? '', email })
+  const mail = welcomeEmail({ name: fullName ?? '', email, userId })
   const sent = await sendEmail({ to: email, subject: mail.subject, html: mail.html })
 
   if (!sent) {

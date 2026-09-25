@@ -1,6 +1,8 @@
+import { unsubscribeLink } from '@/lib/email/unsubscribe'
+
 // ── Shared styles ─────────────────────────────────────────────
 
-const base = (content: string) => `
+const base = (content: string, unsubscribeUrl?: string) => `
 <!DOCTYPE html>
 <html>
 <head>
@@ -28,6 +30,7 @@ const base = (content: string) => `
     <div class="footer">
       <p>Docs Rok — business paperwork for Australian trade businesses.</p>
       <p>If you didn't create an account, you can safely ignore this email.</p>
+      ${unsubscribeUrl ? `<p><a href="${unsubscribeUrl}">Unsubscribe from these emails</a></p>` : ''}
     </div>
   </div>
 </body>
@@ -38,9 +41,14 @@ const base = (content: string) => `
 
 // PIVOT (7 Sept 2026): no more timed trial — 2 free documents, permanently,
 // then a $149 one-time purchase for the rest. trialEndsAt param removed.
+//
+// UNSUBSCRIBE (24 Sept 2026): the link goes on this one too. If a $149
+// purchase up front is enough trust to keep someone on the list, it's also
+// enough trust to hand them the opt-out from message one.
 export function welcomeEmail(params: {
   name: string
   email: string
+  userId: string
 }) {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://docsrok.com.au'
 
@@ -59,18 +67,25 @@ export function welcomeEmail(params: {
         These are business templates and starting points — review and adapt each one to your
         business before use. Not legal, financial, or professional advice.
       </p>
-    `),
+    `, unsubscribeLink(params.userId)),
   }
 }
 
 // ── Lifecycle nudges for free-plan users ──────────────────────
-// Sent by the daily cron to accounts that have not purchased. Each one has a
-// different job: day 2 gets them back to look at what was generated, day 7
-// makes the case for the rest of the set, day 21 is the last one we send.
+// Sent by the daily cron to accounts that have not purchased. Day 2 gets them
+// back to look at what was generated, day 7 makes the case for the rest of
+// the set, day 21 is the last of the hard-sell sequence.
+//
+// UNSUBSCRIBE / ONGOING (24 Sept 2026): day 21 used to be the actual last
+// email — after it, sends just stopped, with no opt-out ever offered. Now
+// every one of these carries a real unsubscribe link, and day 21 hands off to
+// an infrequent ongoing check-in (nudgeOngoing, below) instead of silence.
+// Signing up is enough trust to stay on the list; the unsubscribe link is
+// what lets someone actually leave it.
 
 const appUrl = () => process.env.NEXT_PUBLIC_APP_URL ?? 'https://docsrok.com'
 
-export function nudgeDay2(params: { name: string }) {
+export function nudgeDay2(params: { name: string; userId: string }) {
   return {
     subject: 'Your two documents are ready to use',
     html: base(`
@@ -80,11 +95,11 @@ export function nudgeDay2(params: { name: string }) {
       <p>Worth doing once: open the quote template, and use it on the next job you price.
       That is the fastest way to tell whether this is any good.</p>
       <a href="${appUrl()}/dashboard" class="cta">Open my documents &rarr;</a>
-    `),
+    `, unsubscribeLink(params.userId)),
   }
 }
 
-export function nudgeDay7(params: { name: string }) {
+export function nudgeDay7(params: { name: string; userId: string }) {
   return {
     subject: 'The other 15 documents',
     html: base(`
@@ -95,21 +110,18 @@ export function nudgeDay7(params: { name: string }) {
       <p>It is a one-time $149. No subscription, no monthly fee, and the documents stay
       yours whether or not you ever log in again.</p>
       <a href="${appUrl()}/upgrade" class="cta">See what is included &rarr;</a>
-      <hr class="divider" />
-      <p style="font-size:13px; color:#6b7280;">
-        Not interested? Ignore this and we will stop after one more email.
-      </p>
-    `),
+    `, unsubscribeLink(params.userId)),
   }
 }
 
-export function nudgeDay21(params: { name: string }) {
+export function nudgeDay21(params: { name: string; userId: string }) {
   return {
-    subject: 'Last one from us',
+    subject: 'Last one from us for now',
     html: base(`
       <p>Hi ${params.name || 'there'},</p>
-      <p>This is the last email we will send about the full document set, so no need to
-      unsubscribe from anything.</p>
+      <p>That's the last email about the full document set for now. We'll check in again
+      every so often after this, occasionally and only if we've got something worth
+      saying, rather than a regular drip.</p>
       <p>Your two free documents stay in your account permanently. If you ever want the
       rest, it is there whenever you need it.</p>
       <a href="${appUrl()}/upgrade" class="cta">Unlock the full set &rarr;</a>
@@ -118,7 +130,27 @@ export function nudgeDay21(params: { name: string }) {
         If the documents were not useful, replying to this email with one line about why
         would genuinely help us make them better.
       </p>
-    `),
+    `, unsubscribeLink(params.userId)),
+  }
+}
+
+// ── Ongoing check-in (infrequent, indefinite) ──────────────────
+// Sent by the daily cron starting 60 days after nudgeDay21, then every 60
+// days after that, to anyone who still hasn't purchased and hasn't
+// unsubscribed. Deliberately low-key — this is what keeps someone on the
+// list without it turning into a drip campaign.
+export function nudgeOngoing(params: { name: string; userId: string }) {
+  return {
+    subject: 'Still there if you need it',
+    html: base(`
+      <p>Hi ${params.name || 'there'},</p>
+      <p>Just a low-key check-in — your two free Docs Rok documents are still sitting in
+      your account, and the full set (the other SOPs, subcontractor pack, and business
+      policies) is still a one-time $149 if you ever want the rest.</p>
+      <p>No action needed either way. We'll only email again occasionally, and you can
+      stop hearing from us any time using the link below.</p>
+      <a href="${appUrl()}/dashboard" class="cta">Open my documents &rarr;</a>
+    `, unsubscribeLink(params.userId)),
   }
 }
 
@@ -168,6 +200,9 @@ export function trialExpiredEmail(params: { name: string }) {
 }
 
 // ── Payment confirmed ─────────────────────────────────────────
+// Transactional receipt, not marketing — no unsubscribe link. Someone who
+// just paid still needs their payment confirmations regardless of marketing
+// opt-out status.
 
 export function paymentConfirmedEmail(params: {
   name: string

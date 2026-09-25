@@ -10,6 +10,9 @@ The schema for this project lived only inside the hosted Supabase project until
   `state` to all Australian states and `industry_type` to all 13 trade types, so
   the database matches what the product actually sells. Also adds the missing
   foreign key indexes.
+- `migrations/20260924000000_marketing_opt_out.sql` — adds
+  `profiles.marketing_opt_out` / `marketing_opt_out_at`, backing the one-click
+  unsubscribe link now on every lifecycle email (`src/app/api/unsubscribe/route.ts`).
 
 ## Applying a migration
 
