@@ -1,10 +1,27 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Barlow, Barlow_Semi_Condensed } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { SITE_NAME, SITE_URL } from '@/lib/site'
 import './globals.css'
 
-const inter = Inter({ subsets: ['latin'] })
+// Barlow + Barlow Semi Condensed: one type family in two widths, rather than
+// the default Next.js/Inter pairing every generic template ships with. Barlow
+// was drawn with the condensed lettering of highway signage and license
+// plates as a reference point, which reads as sturdy/utilitarian in a way
+// that suits a trades product better than a neutral tech-SaaS grotesk.
+const barlow = Barlow({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-barlow',
+  display: 'swap',
+})
+
+const barlowCondensed = Barlow_Semi_Condensed({
+  subsets: ['latin'],
+  weight: ['600', '700', '800'],
+  variable: '--font-barlow-condensed',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   // metadataBase makes every relative canonical and OG URL resolve against the
@@ -47,8 +64,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
+    <html lang="en" className={`${barlow.variable} ${barlowCondensed.variable}`}>
+      <body className="font-sans">
         {children}
         <Analytics />
       </body>

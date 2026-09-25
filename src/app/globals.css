@@ -1,26 +1,72 @@
 @import "tailwindcss";
 
+/*
+ * Design tokens for Docs Rok.
+ *
+ * Deliberately not the Tailwind defaults (gray-900/gray-50/orange-600 on
+ * pure white). Those are the exact values every default-theme Tailwind
+ * scaffold ships with, which is a large part of why the site read as
+ * generic/AI-templated: no one had actually chosen a palette. This one is
+ * warm rather than cool-gray (ties to "paperwork"/paper), and pairs a
+ * grounded burnt-orange brand color with a charcoal ink instead of using
+ * bright orange as a full-bleed section background.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --paper: #fbfaf7;
+  --paper-dim: #f3f0ea;
+  --ink: #1c1a16;
+  --ink-2: #4a453c;
+  --muted: #726c60;
+  --line: #e6e1d6;
+
+  --brand: #c2410c;
+  --brand-dark: #9a3412;
+  --brand-light: #fdf1e8;
+
+  --background: var(--paper);
+  --foreground: var(--ink);
 }
 
 @theme inline {
+  --color-paper: var(--paper);
+  --color-paper-dim: var(--paper-dim);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-brand: var(--brand);
+  --color-brand-dark: var(--brand-dark);
+  --color-brand-light: var(--brand-light);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-sans: var(--font-barlow);
+  --font-display: var(--font-barlow-condensed);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* A faint blueprint-grid texture, used behind the hero only. Evokes trade
+   drawings/graph paper without being loud enough to read as "decoration". */
+.bp-grid {
+  background-image:
+    linear-gradient(to right, var(--line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--line) 1px, transparent 1px);
+  background-size: 40px 40px;
+  -webkit-mask-image: linear-gradient(to bottom, black, transparent 85%);
+  mask-image: linear-gradient(to bottom, black, transparent 85%);
+}
+
+/* Native accordion, styled to match. No client JS needed for the FAQ. */
+details.faq > summary {
+  list-style: none;
+  cursor: pointer;
+}
+details.faq > summary::-webkit-details-marker {
+  display: none;
+}
+details.faq[open] .faq-icon {
+  transform: rotate(45deg);
 }
