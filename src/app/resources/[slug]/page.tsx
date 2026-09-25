@@ -2,34 +2,14 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { RESOURCE_PAGES, getResourcePage } from '@/lib/resource-pages'
+import { DOCUMENT_TYPES } from '@/lib/document-types'
+import { SiteNav } from '@/components/SiteNav'
+import { SiteFooter } from '@/components/SiteFooter'
 import { SITE_NAME, SITE_URL } from '@/lib/site'
 
 export function generateStaticParams() {
   return RESOURCE_PAGES.map((p) => ({ slug: p.slug }))
 }
-
-const DOCUMENTS = [
-  {
-    icon: '📋',
-    name: 'Standard Operating Procedures',
-    desc: 'Job intake and quoting, scheduling, quality control, invoicing, and complaint handling, written down once so it happens the same way every time.',
-  },
-  {
-    icon: '📝',
-    name: 'Quote & Proposal Templates',
-    desc: 'A polished, reusable structure for the jobs you quote most: scope, inclusions and exclusions, pricing table, terms, and an acceptance block.',
-  },
-  {
-    icon: '🤝',
-    name: 'Subcontractor & New-Hire Welcome Packs',
-    desc: 'Expectations, site protocols, communication, and payment terms, so a new subbie or apprentice gets up to speed without a long verbal briefing.',
-  },
-  {
-    icon: '📄',
-    name: 'Business Policy Documents',
-    desc: 'Customer service policy, complaints handling, terms of trade, cancellation and refund policy, and code of conduct, in plain business English.',
-  },
-]
 
 export async function generateMetadata({
   params,
@@ -76,68 +56,49 @@ export default async function ResourcePage({
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-paper">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
 
-      {/* Nav */}
-      <nav className="border-b border-gray-100 bg-white sticky top-0 z-10">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-          <Link href="/" className="text-orange-600 font-bold text-lg tracking-tight">
-            Docs Rok
-          </Link>
-          <div className="flex items-center gap-4">
-            <Link href="/login" className="text-sm text-gray-500 hover:text-gray-800 transition-colors">
-              Sign in
-            </Link>
-            <Link
-              href="/signup"
-              className="text-sm bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors font-medium"
-            >
-              Start free
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <SiteNav />
 
       {/* Hero */}
-      <section className="pt-16 pb-12 px-4 sm:px-6">
-        <div className="max-w-3xl mx-auto">
-          <div className="inline-block bg-orange-50 text-orange-700 text-xs font-semibold px-3 py-1 rounded-full mb-6 tracking-wide uppercase">
+      <section className="relative overflow-hidden border-b border-line">
+        <div className="bp-grid pointer-events-none absolute inset-0" />
+        <div className="relative mx-auto max-w-3xl px-4 py-16 sm:px-6">
+          <div className="mb-6 inline-flex items-center gap-2 border-l-2 border-brand bg-white/60 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-ink-2">
             {page.tradeLabel} &middot; {page.stateLabel}
           </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 leading-tight mb-6">
+          <h1 className="font-display text-4xl font-extrabold leading-tight tracking-tight text-ink sm:text-5xl">
             Business paperwork templates for {page.tradeSearchTerm}s in {page.stateLabel}
           </h1>
-          <p className="text-lg text-gray-600 mb-4">{page.painPoint}</p>
-          <p className="text-lg text-gray-600 mb-8">
-            It shows up as soon as {page.scenario}
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3">
+          <p className="mt-6 text-lg text-ink-2">{page.painPoint}</p>
+          <p className="mt-4 text-lg text-ink-2">It shows up as soon as {page.scenario}</p>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link
               href="/signup"
-              className="bg-orange-600 text-white text-base font-semibold px-8 py-3.5 rounded-xl hover:bg-orange-700 transition-colors text-center"
+              className="rounded-md bg-brand px-8 py-3.5 text-center text-base font-semibold text-white transition-colors hover:bg-brand-dark"
             >
               Start free
             </Link>
             <Link
               href="/#pricing"
-              className="bg-gray-100 text-gray-700 text-base font-semibold px-8 py-3.5 rounded-xl hover:bg-gray-200 transition-colors text-center"
+              className="rounded-md border border-line bg-white px-8 py-3.5 text-center text-base font-semibold text-ink transition-colors hover:bg-paper-dim"
             >
               See pricing
             </Link>
           </div>
-          <p className="text-xs text-gray-400 mt-4">
+          <p className="mt-4 text-xs text-muted">
             Two documents free, no credit card. Full set is a one-time $149, no subscription.
           </p>
         </div>
       </section>
 
       {/* Local note */}
-      <div className="bg-gray-50 border-y border-gray-100 py-6 px-4 sm:px-6">
-        <div className="max-w-3xl mx-auto text-sm text-gray-600">
+      <div className="border-b border-line bg-paper-dim/70 px-4 py-6 sm:px-6">
+        <div className="mx-auto max-w-3xl text-sm text-ink-2">
           <p>
             Businesses in {page.stateLabel} register their trade licence with {page.regulator}.
             Docs Rok doesn&apos;t touch licensing or compliance paperwork, it generates the
@@ -148,17 +109,19 @@ export default async function ResourcePage({
       </div>
 
       {/* What's included */}
-      <section className="py-16 px-4 sm:px-6">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">
+      <section className="px-4 py-16 sm:px-6">
+        <div className="mx-auto max-w-4xl">
+          <h2 className="mb-10 text-center font-display text-2xl font-bold tracking-tight text-ink sm:text-3xl">
             What you get, customised to your trade and state
           </h2>
-          <div className="grid sm:grid-cols-2 gap-6">
-            {DOCUMENTS.map((doc) => (
-              <div key={doc.name} className="border border-gray-100 rounded-xl p-6">
-                <div className="text-2xl mb-3">{doc.icon}</div>
-                <h3 className="font-semibold text-gray-900 mb-2">{doc.name}</h3>
-                <p className="text-sm text-gray-500">{doc.desc}</p>
+          <div className="grid gap-px overflow-hidden rounded-lg border border-line bg-line sm:grid-cols-2">
+            {DOCUMENT_TYPES.map((doc) => (
+              <div key={doc.name} className="bg-paper p-6">
+                <span className="mb-3 flex h-10 w-10 items-center justify-center rounded-md bg-brand-light text-brand">
+                  <doc.icon className="h-5 w-5" strokeWidth={1.75} />
+                </span>
+                <h3 className="font-display text-lg font-bold text-ink">{doc.name}</h3>
+                <p className="mt-1 text-sm text-muted">{doc.desc}</p>
               </div>
             ))}
           </div>
@@ -166,57 +129,25 @@ export default async function ResourcePage({
       </section>
 
       {/* CTA */}
-      <section className="bg-orange-600 py-16 px-4 sm:px-6 text-center">
-        <div className="max-w-2xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">
+      <section className="bg-ink px-4 py-16 text-center sm:px-6">
+        <div className="mx-auto max-w-2xl">
+          <h2 className="font-display text-2xl font-bold text-white sm:text-3xl">
             Get your {page.tradeSearchTerm} paperwork sorted today
           </h2>
-          <p className="text-orange-100 mb-8 text-lg">
+          <p className="mb-8 mt-4 text-lg text-white/70">
             Start with two documents free, no credit card. Unlock the full set for a one-time
             $149 whenever you&apos;re ready.
           </p>
           <Link
             href="/signup"
-            className="inline-block bg-white text-orange-600 font-bold text-base px-10 py-4 rounded-xl hover:bg-orange-50 transition-colors"
+            className="inline-block rounded-md bg-brand px-10 py-4 text-base font-bold text-white transition-colors hover:bg-brand-dark"
           >
             Start free
           </Link>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-gray-900 text-gray-400 py-10 px-4 sm:px-6">
-        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-start justify-between gap-6">
-          <div>
-            <div className="text-orange-500 font-bold text-lg mb-1">Docs Rok</div>
-            <div className="text-xs">Business paperwork for Australian trades</div>
-          </div>
-          <div className="flex gap-8 text-sm">
-            <div>
-              <div className="text-gray-300 font-medium mb-2">Product</div>
-              <div className="space-y-1 text-xs">
-                <div><Link href="/#how-it-works" className="hover:text-white transition-colors">How it works</Link></div>
-                <div><Link href="/resources" className="hover:text-white transition-colors">Resources</Link></div>
-                <div><Link href="/signup" className="hover:text-white transition-colors">Start free</Link></div>
-              </div>
-            </div>
-            <div>
-              <div className="text-gray-300 font-medium mb-2">Legal</div>
-              <div className="space-y-1 text-xs">
-                <div><Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link></div>
-                <div><Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link></div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="max-w-5xl mx-auto border-t border-gray-800 mt-8 pt-6 text-xs text-gray-600">
-          <p>
-            &copy; {new Date().getFullYear()} Docs Rok. Documents are templates and starting
-            points for your business, review and adapt them before use. Not legal, financial, or
-            professional advice.
-          </p>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   )
 }

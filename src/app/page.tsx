@@ -1,35 +1,16 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { Inbox, FileWarning, Banknote, Check, Plus, ArrowRight } from 'lucide-react'
 import { SITE_NAME, SITE_URL } from '@/lib/site'
+import { DOCUMENT_TYPES } from '@/lib/document-types'
+import { SiteNav } from '@/components/SiteNav'
+import { SiteFooter } from '@/components/SiteFooter'
 
 export const metadata: Metadata = {
   title: 'Docs Rok — Business Paperwork for Australian Trades',
   description:
     'Generate SOPs, subcontractor packs, quote templates, and business policies for your trade business. Customised to your business in minutes.',
 }
-
-const DOCUMENTS = [
-  {
-    icon: '📋',
-    name: 'Standard Operating Procedures (SOPs)',
-    desc: 'For the processes that keep your business running the same way every time — job intake and quoting, scheduling, quality control, invoicing, complaint handling, and more.',
-  },
-  {
-    icon: '🤝',
-    name: 'Subcontractor & New-Hire Welcome Packs',
-    desc: 'A clear welcome pack covering expectations, site protocols, communication, and payment terms — so new subbies and staff get up to speed faster.',
-  },
-  {
-    icon: '📝',
-    name: 'Quote & Proposal Templates',
-    desc: 'A polished, reusable quote structure for each type of job you do — scope, inclusions/exclusions, pricing table, terms, and acceptance block.',
-  },
-  {
-    icon: '📄',
-    name: 'Business Policy Documents',
-    desc: 'Customer service policy, complaints handling, terms of trade, cancellation and refund policy, and code of conduct — all in plain business English.',
-  },
-]
 
 const SERVICES = [
   'Job intake and quoting',
@@ -42,19 +23,40 @@ const SERVICES = [
   'Equipment and vehicle care',
 ]
 
+const PROBLEMS = [
+  {
+    num: '01',
+    icon: Inbox,
+    title: 'It never gets written',
+    desc: 'You know your quoting process should be written down somewhere. It lives in your head instead, which is fine until you\'re not the one answering the phone.',
+  },
+  {
+    num: '02',
+    icon: FileWarning,
+    title: 'Generic templates don\'t fit',
+    desc: 'A Word template from Google doesn\'t know what trade you\'re in, what services you offer, or how your business actually runs a job.',
+  },
+  {
+    num: '03',
+    icon: Banknote,
+    title: 'Consultants are overkill',
+    desc: 'Paying a business consultant to write internal SOPs and policy documents is real money for paperwork you could generate and adapt yourself in minutes.',
+  },
+]
+
 const HOW_IT_WORKS = [
   {
-    step: '1',
+    step: '01',
     title: 'Tell us about your business',
     desc: 'Enter your business name, ABN, state, trade type, number of employees, and the services you offer. Takes about 3 minutes.',
   },
   {
-    step: '2',
+    step: '02',
     title: 'Documents generate automatically',
     desc: 'Our AI generates every document customised to your business and your trade — typically in under 60 seconds.',
   },
   {
-    step: '3',
+    step: '03',
     title: 'Review, print, and download',
     desc: 'Open each document in your browser, review it, edit anything you want to change, and save as PDF. Regenerate any time your business changes.',
   },
@@ -187,111 +189,85 @@ function structuredData() {
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-paper">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData()) }}
       />
 
-      {/* Nav */}
-      <nav className="border-b border-gray-100 bg-white sticky top-0 z-10">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-          <span className="text-orange-600 font-bold text-lg tracking-tight">Docs Rok</span>
-          <div className="flex items-center gap-4">
-            <Link href="/resources" className="text-sm text-gray-500 hover:text-gray-800 transition-colors hidden sm:inline">
-              Resources
-            </Link>
-            <Link href="/login" className="text-sm text-gray-500 hover:text-gray-800 transition-colors">
-              Sign in
-            </Link>
-            <Link
-              href="/signup"
-              className="text-sm bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors font-medium"
-            >
-              Start free
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <SiteNav />
 
       {/* Hero */}
-      <section className="bg-white pt-20 pb-16 px-4 sm:px-6 text-center">
-        <div className="max-w-3xl mx-auto">
-          <div className="inline-block bg-orange-50 text-orange-700 text-xs font-semibold px-3 py-1 rounded-full mb-6 tracking-wide uppercase">
+      <section className="relative overflow-hidden border-b border-line">
+        <div className="bp-grid pointer-events-none absolute inset-0" />
+        <div className="relative mx-auto max-w-3xl px-4 pb-16 pt-20 text-center sm:px-6">
+          <div className="mb-6 inline-flex items-center gap-2 border-l-2 border-brand bg-white/60 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-ink-2">
             Any Australian trade, any state
           </div>
-          <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-900 leading-tight mb-6">
+          <h1 className="font-display text-5xl font-extrabold leading-[1.05] tracking-tight text-ink sm:text-6xl">
             The paperwork your trade business never gets around to.{' '}
-            <span className="text-orange-600">Done in minutes.</span>
+            <span className="text-brand">Done in minutes.</span>
           </h1>
-          <p className="text-lg text-gray-500 mb-8 max-w-2xl mx-auto">
+          <p className="mx-auto mb-8 mt-6 max-w-2xl text-lg text-muted">
             Docs Rok generates your SOPs, subcontractor welcome packs, quote templates, and
             business policies — customised to your trade and your business, so you can stop
             starting from a blank page.
           </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <div className="flex flex-col justify-center gap-3 sm:flex-row">
             <Link
               href="/signup"
-              className="bg-orange-600 text-white text-base font-semibold px-8 py-3.5 rounded-xl hover:bg-orange-700 transition-colors"
+              className="rounded-md bg-brand px-8 py-3.5 text-base font-semibold text-white transition-colors hover:bg-brand-dark"
             >
               Start free
             </Link>
             <Link
               href="#how-it-works"
-              className="bg-gray-100 text-gray-700 text-base font-semibold px-8 py-3.5 rounded-xl hover:bg-gray-200 transition-colors"
+              className="rounded-md border border-line bg-white px-8 py-3.5 text-base font-semibold text-ink transition-colors hover:bg-paper-dim"
             >
               See how it works
             </Link>
           </div>
-          <p className="text-xs text-gray-400 mt-4">
+          <p className="mt-4 text-xs text-muted">
             Two documents free, no credit card. Full set is a one-time $149.
           </p>
         </div>
+
+        {/* Trust bar */}
+        <div className="relative border-t border-line bg-paper-dim/70 py-4">
+          <div className="mx-auto flex max-w-4xl flex-wrap items-center justify-center gap-x-8 gap-y-2 px-4 text-sm text-ink-2">
+            {['Any Australian trade', 'All states', '4 document types', 'Fully editable', '2 documents free'].map((t) => (
+              <span key={t} className="inline-flex items-center gap-1.5">
+                <Check className="h-4 w-4 text-brand" strokeWidth={2.5} />
+                {t}
+              </span>
+            ))}
+          </div>
+        </div>
       </section>
 
-      {/* Trust bar */}
-      <div className="bg-gray-50 border-y border-gray-100 py-4 px-4">
-        <div className="max-w-4xl mx-auto flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-sm text-gray-500">
-          <span>✓ Any Australian trade</span>
-          <span>✓ All states</span>
-          <span>✓ 4 document types</span>
-          <span>✓ Fully editable</span>
-          <span>✓ 2 documents free</span>
-        </div>
-      </div>
-
-      {/* Pain section */}
-      <section className="py-20 px-4 sm:px-6">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold text-gray-900 text-center mb-4">
-            Every trade business needs this paperwork. Almost none of them have time to write it.
-          </h2>
-          <p className="text-gray-500 text-center mb-12 max-w-2xl mx-auto">
-            SOPs, subcontractor packs, quote templates, business policies — everyone agrees you
-            should have them. Here&apos;s what actually happens instead.
-          </p>
-          <div className="grid sm:grid-cols-3 gap-6">
-            {[
-              {
-                icon: '📥',
-                title: 'It never gets written',
-                desc: 'You know your quoting process should be written down somewhere. It lives in your head instead, which is fine until you\'re not the one answering the phone.',
-              },
-              {
-                icon: '📄',
-                title: 'Generic templates don\'t fit',
-                desc: 'A Word template from Google doesn\'t know what trade you\'re in, what services you offer, or how your business actually runs a job.',
-              },
-              {
-                icon: '💸',
-                title: 'Consultants are overkill',
-                desc: 'Paying a business consultant to write internal SOPs and policy documents is real money for paperwork you could generate and adapt yourself in minutes.',
-              },
-            ].map((p) => (
-              <div key={p.title} className="bg-gray-50 rounded-xl p-6">
-                <div className="text-3xl mb-3">{p.icon}</div>
-                <h3 className="font-semibold text-gray-900 mb-2">{p.title}</h3>
-                <p className="text-sm text-gray-500">{p.desc}</p>
+      {/* Pain section — left-aligned editorial list, not a centered 3-card grid */}
+      <section className="px-4 py-20 sm:px-6">
+        <div className="mx-auto max-w-4xl">
+          <div className="mb-14 max-w-2xl">
+            <h2 className="font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl">
+              Every trade business needs this paperwork. Almost none of them have time to write it.
+            </h2>
+            <p className="mt-4 text-muted">
+              SOPs, subcontractor packs, quote templates, business policies — everyone agrees you
+              should have them. Here&apos;s what actually happens instead.
+            </p>
+          </div>
+          <div className="divide-y divide-line border-y border-line">
+            {PROBLEMS.map((p) => (
+              <div key={p.title} className="grid grid-cols-1 gap-4 py-8 sm:grid-cols-[auto_auto_1fr] sm:items-start sm:gap-8">
+                <span className="font-display text-4xl font-bold text-line sm:text-5xl">{p.num}</span>
+                <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-md bg-brand-light text-brand">
+                  <p.icon className="h-5 w-5" strokeWidth={1.75} />
+                </span>
+                <div>
+                  <h3 className="font-display text-lg font-bold text-ink">{p.title}</h3>
+                  <p className="mt-1 max-w-xl text-sm text-muted">{p.desc}</p>
+                </div>
               </div>
             ))}
           </div>
@@ -299,32 +275,36 @@ export default function HomePage() {
       </section>
 
       {/* Documents */}
-      <section className="bg-gray-50 py-20 px-4 sm:px-6">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold text-gray-900 text-center mb-4">
-            Every document your trade business needs
-          </h2>
-          <p className="text-gray-500 text-center mb-12 max-w-2xl mx-auto">
-            All customised to your business name, ABN, trade type, and the specific services you offer.
-          </p>
-          <div className="grid sm:grid-cols-2 gap-4 mb-8">
-            {DOCUMENTS.map((d) => (
-              <div key={d.name} className="bg-white rounded-xl p-5 border border-gray-200">
-                <div className="text-2xl mb-2">{d.icon}</div>
-                <h3 className="font-semibold text-gray-900 mb-1">{d.name}</h3>
-                <p className="text-sm text-gray-500">{d.desc}</p>
+      <section className="bg-paper-dim px-4 py-20 sm:px-6">
+        <div className="mx-auto max-w-5xl">
+          <div className="mb-12 max-w-2xl">
+            <h2 className="font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl">
+              Every document your trade business needs
+            </h2>
+            <p className="mt-4 text-muted">
+              All customised to your business name, ABN, trade type, and the specific services you offer.
+            </p>
+          </div>
+          <div className="mb-8 grid gap-px overflow-hidden rounded-lg border border-line bg-line sm:grid-cols-2">
+            {DOCUMENT_TYPES.map((d) => (
+              <div key={d.name} className="bg-paper p-6">
+                <span className="mb-3 flex h-10 w-10 items-center justify-center rounded-md bg-brand-light text-brand">
+                  <d.icon className="h-5 w-5" strokeWidth={1.75} />
+                </span>
+                <h3 className="font-display text-lg font-bold text-ink">{d.name}</h3>
+                <p className="mt-1 text-sm text-muted">{d.desc}</p>
               </div>
             ))}
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-xl p-6">
-            <h3 className="font-semibold text-gray-900 mb-4">
+          <div className="rounded-lg border border-line bg-paper p-6">
+            <h3 className="font-display text-lg font-bold text-ink">
               SOPs — 8 core business processes covered
             </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
               {SERVICES.map((a) => (
-                <div key={a} className="flex items-center gap-2 text-sm text-gray-600">
-                  <span className="text-orange-500 font-bold flex-shrink-0">✓</span>
+                <div key={a} className="flex items-center gap-2 text-sm text-ink-2">
+                  <Check className="h-4 w-4 flex-shrink-0 text-brand" strokeWidth={2.5} />
                   {a}
                 </div>
               ))}
@@ -334,81 +314,82 @@ export default function HomePage() {
       </section>
 
       {/* How it works */}
-      <section id="how-it-works" className="py-20 px-4 sm:px-6">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold text-gray-900 text-center mb-4">How it works</h2>
-          <p className="text-gray-500 text-center mb-12">From signup to print-ready documents in under 5 minutes.</p>
-          <div className="grid sm:grid-cols-3 gap-8">
+      <section id="how-it-works" className="px-4 py-20 sm:px-6">
+        <div className="mx-auto max-w-4xl">
+          <div className="mb-14 max-w-2xl">
+            <h2 className="font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl">How it works</h2>
+            <p className="mt-4 text-muted">From signup to print-ready documents in under 5 minutes.</p>
+          </div>
+          <div className="grid gap-10 sm:grid-cols-3">
             {HOW_IT_WORKS.map((s) => (
-              <div key={s.step} className="text-center">
-                <div className="w-12 h-12 bg-orange-100 text-orange-700 rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">
-                  {s.step}
-                </div>
-                <h3 className="font-semibold text-gray-900 mb-2">{s.title}</h3>
-                <p className="text-sm text-gray-500">{s.desc}</p>
+              <div key={s.step} className="border-t-2 border-ink pt-4">
+                <span className="font-display text-sm font-bold text-brand">{s.step}</span>
+                <h3 className="mt-2 font-display text-lg font-bold text-ink">{s.title}</h3>
+                <p className="mt-1 text-sm text-muted">{s.desc}</p>
               </div>
             ))}
           </div>
-          <div className="text-center mt-10">
+          <div className="mt-12 text-center">
             <Link
               href="/signup"
-              className="inline-block bg-orange-600 text-white font-semibold px-8 py-3.5 rounded-xl hover:bg-orange-700 transition-colors"
+              className="inline-flex items-center gap-2 rounded-md bg-brand px-8 py-3.5 font-semibold text-white transition-colors hover:bg-brand-dark"
             >
               Start free, no credit card
+              <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         </div>
       </section>
 
       {/* Pricing */}
-      <section id="pricing" className="bg-gray-50 py-20 px-4 sm:px-6">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold text-gray-900 text-center mb-4">
-            Pay once. Keep your documents.
-          </h2>
-          <p className="text-gray-500 text-center mb-12">
-            Start with two documents free. Unlock the full set for a single payment.
-            No subscription, no contract.
-          </p>
-          <div className="grid sm:grid-cols-2 gap-6 max-w-3xl mx-auto">
+      <section id="pricing" className="bg-paper-dim px-4 py-20 sm:px-6">
+        <div className="mx-auto max-w-4xl">
+          <div className="mb-14 text-center">
+            <h2 className="font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl">
+              Pay once. Keep your documents.
+            </h2>
+            <p className="mx-auto mt-4 max-w-xl text-muted">
+              Start with two documents free. Unlock the full set for a single payment.
+              No subscription, no contract.
+            </p>
+          </div>
+          <div className="mx-auto grid max-w-3xl gap-6 sm:grid-cols-2">
             {PLANS.map((plan) => (
               <div
                 key={plan.name}
-                className={`rounded-2xl p-6 flex flex-col ${
-                  plan.highlight
-                    ? 'bg-orange-600 text-white ring-2 ring-orange-600'
-                    : 'bg-white border border-gray-200'
+                className={`relative flex flex-col rounded-lg bg-paper p-6 ${
+                  plan.highlight ? 'border-2 border-ink' : 'border border-line'
                 }`}
               >
                 {plan.highlight && (
-                  <div className="text-xs font-bold uppercase tracking-widest text-orange-200 mb-2">Most popular</div>
+                  <div className="absolute -top-3 left-6 bg-brand px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
+                    Most popular
+                  </div>
                 )}
-                <div className={`text-xs font-semibold uppercase tracking-wide mb-1 ${plan.highlight ? 'text-orange-100' : 'text-gray-400'}`}>
+                <div className="text-xs font-semibold uppercase tracking-wide text-muted">
                   {plan.name}
                 </div>
-                <div className={`text-3xl font-extrabold mb-1 ${plan.highlight ? 'text-white' : 'text-gray-900'}`}>
+                <div className="mt-1 font-display text-4xl font-extrabold text-ink">
                   ${plan.price}
-                  <span className={`text-base font-normal ${plan.highlight ? 'text-orange-100' : 'text-gray-400'}`}>
+                  <span className="font-sans text-base font-normal text-muted">
                     {' '}{plan.priceNote} {plan.price > 0 ? 'AUD' : ''}
                   </span>
                 </div>
-                <div className={`text-sm mb-5 ${plan.highlight ? 'text-orange-100' : 'text-gray-500'}`}>
-                  {plan.desc}
-                </div>
-                <ul className="space-y-2 mb-6 flex-1">
+                <div className="mb-5 mt-2 text-sm text-muted">{plan.desc}</div>
+                <ul className="mb-6 flex-1 space-y-2">
                   {plan.features.map((f) => (
-                    <li key={f} className={`flex items-start gap-2 text-sm ${plan.highlight ? 'text-white' : 'text-gray-600'}`}>
-                      <span className={`flex-shrink-0 ${plan.highlight ? 'text-orange-200' : 'text-orange-500'}`}>✓</span>
+                    <li key={f} className="flex items-start gap-2 text-sm text-ink-2">
+                      <Check className="h-4 w-4 flex-shrink-0 text-brand" strokeWidth={2.5} />
                       {f}
                     </li>
                   ))}
                 </ul>
                 <Link
                   href="/signup"
-                  className={`text-center text-sm font-semibold px-4 py-2.5 rounded-lg transition-colors ${
+                  className={`rounded-md px-4 py-2.5 text-center text-sm font-semibold transition-colors ${
                     plan.highlight
-                      ? 'bg-white text-orange-600 hover:bg-orange-50'
-                      : 'bg-orange-600 text-white hover:bg-orange-700'
+                      ? 'bg-ink text-white hover:bg-ink-2'
+                      : 'bg-brand text-white hover:bg-brand-dark'
                   }`}
                 >
                   {plan.cta}
@@ -416,87 +397,52 @@ export default function HomePage() {
               </div>
             ))}
           </div>
-          <p className="text-center text-sm text-gray-400 mt-6">
+          <p className="mt-6 text-center text-sm text-muted">
             Price in AUD, ex-GST. One payment, not a subscription.
           </p>
         </div>
       </section>
 
-      {/* FAQ */}
-      <section className="py-20 px-4 sm:px-6">
-        <div className="max-w-3xl mx-auto">
-          <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">
+      {/* FAQ — native <details>, so it's a working accordion with no client JS */}
+      <section className="px-4 py-20 sm:px-6">
+        <div className="mx-auto max-w-3xl">
+          <h2 className="mb-12 text-center font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl">
             Common questions
           </h2>
-          <div className="space-y-6">
+          <div className="divide-y divide-line border-y border-line">
             {FAQS.map((faq) => (
-              <div key={faq.q} className="border-b border-gray-100 pb-6">
-                <h3 className="font-semibold text-gray-900 mb-2">{faq.q}</h3>
-                <p className="text-sm text-gray-500 leading-relaxed">{faq.a}</p>
-              </div>
+              <details key={faq.q} className="faq group py-5">
+                <summary className="flex items-center justify-between gap-4">
+                  <span className="font-display font-bold text-ink">{faq.q}</span>
+                  <Plus className="faq-icon h-5 w-5 flex-shrink-0 text-brand transition-transform" strokeWidth={2.5} />
+                </summary>
+                <p className="mt-3 text-sm leading-relaxed text-muted">{faq.a}</p>
+              </details>
             ))}
           </div>
         </div>
       </section>
 
       {/* Final CTA */}
-      <section className="bg-orange-600 py-20 px-4 sm:px-6 text-center">
-        <div className="max-w-2xl mx-auto">
-          <h2 className="text-3xl font-bold text-white mb-4">
+      <section className="bg-ink px-4 py-20 text-center sm:px-6">
+        <div className="mx-auto max-w-2xl">
+          <h2 className="font-display text-3xl font-bold text-white sm:text-4xl">
             Get your business paperwork sorted today
           </h2>
-          <p className="text-orange-100 mb-8 text-lg">
+          <p className="mb-8 mt-4 text-lg text-white/70">
             Start with two documents free, no credit card. Unlock the full set
             whenever you are ready, for a one-time $149.
           </p>
           <Link
             href="/signup"
-            className="inline-block bg-white text-orange-600 font-bold text-base px-10 py-4 rounded-xl hover:bg-orange-50 transition-colors"
+            className="inline-block rounded-md bg-brand px-10 py-4 text-base font-bold text-white transition-colors hover:bg-brand-dark"
           >
             Start free
           </Link>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-gray-900 text-gray-400 py-10 px-4 sm:px-6">
-        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-start justify-between gap-6">
-          <div>
-            <div className="text-orange-500 font-bold text-lg mb-1">Docs Rok</div>
-            <div className="text-xs">Business paperwork for Australian trades</div>
-            <div className="text-xs mt-1">Any trade, any state</div>
-          </div>
-          <div className="flex gap-8 text-sm">
-            <div>
-              <div className="text-gray-300 font-medium mb-2">Product</div>
-              <div className="space-y-1 text-xs">
-                <div><Link href="/#how-it-works" className="hover:text-white transition-colors">How it works</Link></div>
-                <div><Link href="/resources" className="hover:text-white transition-colors">Resources</Link></div>
-                <div><Link href="/#pricing" className="hover:text-white transition-colors">Pricing</Link></div>
-                <div><Link href="/signup" className="hover:text-white transition-colors">Start free</Link></div>
-              </div>
-            </div>
-            <div>
-              <div className="text-gray-300 font-medium mb-2">Account</div>
-              <div className="space-y-1 text-xs">
-                <div><Link href="/login" className="hover:text-white transition-colors">Sign in</Link></div>
-                <div><Link href="/dashboard" className="hover:text-white transition-colors">Dashboard</Link></div>
-              </div>
-            </div>
-            <div>
-              <div className="text-gray-300 font-medium mb-2">Legal</div>
-              <div className="space-y-1 text-xs">
-                <div><Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link></div>
-                <div><Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link></div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="max-w-5xl mx-auto border-t border-gray-800 mt-8 pt-6 text-xs text-gray-600">
-          <p>© {new Date().getFullYear()} Docs Rok. Documents are templates and starting points for your business — review and adapt them before use. Not legal, financial, or professional advice.</p>
-        </div>
-      </footer>
-
+      <SiteFooter />
     </div>
   )
 }
