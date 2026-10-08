@@ -21,8 +21,10 @@ export async function completeSignup(params: {
   userId: string
   email: string
   fullName: string | null
+  /** First-touch source captured by middleware (ref, utm_*, gclid, referrer, landing). */
+  attribution?: Record<string, string>
 }): Promise<{ firstTime: boolean }> {
-  const { userId, email, fullName } = params
+  const { userId, email, fullName, attribution = {} } = params
 
   let supabase: ReturnType<typeof createAdminClient>
   try {
@@ -39,7 +41,7 @@ export async function completeSignup(params: {
 
   if (claimError) return { firstTime: false }
 
-  await track('signup_completed', userId)
+  await track('signup_completed', userId, attribution)
 
   const mail = welcomeEmail({ name: fullName ?? '', email, userId })
   const sent = await sendEmail({ to: email, subject: mail.subject, html: mail.html })

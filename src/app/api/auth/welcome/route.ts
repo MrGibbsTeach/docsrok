@@ -1,6 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { completeSignup } from '@/lib/auth/welcome'
 import { NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
+import { readAttribution } from '@/lib/analytics/attribution'
 
 /**
  * Called by the signup page once an account exists. Takes the user from the
@@ -22,6 +24,7 @@ export async function POST() {
       userId: user.id,
       email: user.email,
       fullName: (user.user_metadata?.full_name as string | undefined) ?? null,
+      attribution: readAttribution((await cookies()).get('dr_src')?.value),
     })
 
     return NextResponse.json({ ok: true, firstTime })

@@ -1,6 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { completeSignup } from '@/lib/auth/welcome'
 import { NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
+import { readAttribution } from '@/lib/analytics/attribution'
 
 // Handles the OAuth / magic link / email confirmation callback from Supabase
 export async function GET(request: Request) {
@@ -20,6 +22,7 @@ export async function GET(request: Request) {
           userId: data.user.id,
           email: data.user.email,
           fullName: (data.user.user_metadata?.full_name as string | undefined) ?? null,
+          attribution: readAttribution((await cookies()).get('dr_src')?.value),
         })
       }
 

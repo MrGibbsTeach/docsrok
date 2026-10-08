@@ -52,7 +52,55 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
+  captureAttribution(request, supabaseResponse)
+
   return supabaseResponse
+}
+
+/**
+ * First-touch attribution. When a visitor arrives with ?ref=, utm_* or gclid,
+ * remember where they came from for 90 days so the signup can be credited to
+ * the right channel (Google Ads, a resource page, an outreach link...).
+ *
+ * First touch wins: an existing cookie is never overwritten, so a later visit
+ * from a bookmark does not erase the ad click that actually brought them in.
+ */
+const ATTRIBUTION_COOKIE = 'dr_src'
+const ATTRIBUTION_PARAMS = ['ref', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'gclid'] as const
+
+function captureAttribution(request: NextRequest, response: NextResponse) {
+  if (request.cookies.get(ATTRIBUTION_COOKIE)) return
+
+  const params = request.nextUrl.searchParams
+  const src: Record<string, string> = {}
+  for (const key of ATTRIBUTION_PARAMS) {
+    const value = params.get(key)
+    if (value) src[key] = value.slice(0, 120)
+  }
+
+  const referrer = request.headers.get('referer')
+  if (referrer) {
+    try {
+      const host = new URL(referrer).hostname
+      if (host && !host.endsWith('docsrok.com')) src.referrer = host
+    } catch {
+      // ignore malformed referrers
+    }
+  }
+
+  // Only set the cookie when there is something worth recording.
+  if (Object.keys(src).length === 0) return
+
+  src.landing = request.nextUrl.pathname.slice(0, 120)
+  src.at = new Date().toISOString()
+
+  response.cookies.set(ATTRIBUTION_COOKIE, JSON.stringify(src), {
+    maxAge: 60 * 60 * 24 * 90,
+    path: '/',
+    sameSite: 'lax',
+    httpOnly: true,
+    secure: true,
+  })
 }
 
 export const config = {
