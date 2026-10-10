@@ -22,6 +22,9 @@ const MAX_ATTEMPTS = 4
 // Firing all ~24 prompts at once reliably triggered 529 Overloaded responses.
 // A modest cap plus backoff is far more likely to complete than a burst.
 const CONCURRENCY = 8
+// A generation run holds a per-business lock for at most this long. Comfortably
+// above maxDuration, so a crashed run never blocks the user for good.
+const LOCK_TTL_MS = 6 * 60 * 1000
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -105,6 +108,7 @@ export async function POST(request: Request) {
   // by the outer try/catch) fired nothing at all.
   let userId: string | null = null
   let stage = 'unknown'
+  let releaseLock: (() => Promise<unknown>) | null = null
 
   try {
     const supabase = await createClient()
@@ -140,6 +144,37 @@ export async function POST(request: Request) {
     if (bizError || !business) {
       return NextResponse.json({ error: 'Business not found' }, { status: 404 })
     }
+
+    // One generation run per business at a time. The existing-document check
+    // below runs before ~30-60s of Claude calls, so two overlapping requests
+    // (onboarding's fire-and-forget call plus a dashboard button press, a
+    // retry, two tabs) both saw "no documents yet" and both generated the full
+    // set: double the Anthropic spend and duplicate is_current rows (5 Oct).
+    // This UPDATE is a single atomic statement; a concurrent second request
+    // blocks on the row lock, re-evaluates the WHERE, and matches nothing.
+    const lockCutoff = new Date(Date.now() - LOCK_TTL_MS).toISOString()
+    const { data: claimed, error: lockError } = await supabase
+      .from('businesses')
+      .update({ generation_started_at: new Date().toISOString() })
+      .eq('id', business.id)
+      .or(`generation_started_at.is.null,generation_started_at.lt."${lockCutoff}"`)
+      .select('id')
+
+    if (lockError) {
+      throw new Error(`Could not take generation lock: ${lockError.message}`)
+    }
+    if (!claimed || claimed.length === 0) {
+      // 2xx so the dashboard button treats it as success and just refreshes.
+      return NextResponse.json(
+        { message: 'Generation already in progress' },
+        { status: 202 }
+      )
+    }
+    releaseLock = async () =>
+      supabase
+        .from('businesses')
+        .update({ generation_started_at: null })
+        .eq('id', business.id)
 
     // PIVOT (7 Sept 2026): free tier is permanent (no trial expiry) but limited
     // to 2 documents. status='active' is what "paid" means everywhere — set by
@@ -428,5 +463,14 @@ export async function POST(request: Request) {
     // error, etc.) still gets recorded instead of vanishing silently.
     await track('generation_failed', userId, { detail, stage })
     return NextResponse.json({ error: detail }, { status: 500 })
+  } finally {
+    if (releaseLock) {
+      try {
+        await releaseLock()
+      } catch (err) {
+        // The TTL frees it anyway; never let this mask the real response.
+        console.error('Failed to release generation lock:', err)
+      }
+    }
   }
 }
