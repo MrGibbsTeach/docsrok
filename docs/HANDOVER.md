@@ -27,3 +27,4 @@ Next.js 16 (App Router, Turbopack) on Vercel (syd1). Supabase Postgres + Auth wi
 
 ## Session log
 - 18 Oct 2026: handover system added (this file, AGENTS.md section). No code changes.
+- 9 Nov 2026: /upgrade is now a server page (`page.tsx`) that names the user's still-locked documents, passed to `UpgradeClient.tsx`. Customer-facing support address changed from the never-configured docsrok.com.au to support@docsrok.com (upgrade, privacy, terms); email template fallback URL now https://www.docsrok.com. Commit 3088180, Vercel READY.
