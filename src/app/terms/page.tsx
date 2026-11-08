@@ -95,7 +95,7 @@ export default function TermsPage() {
               You must provide accurate information when creating your account. You are responsible
               for maintaining the security of your password and for all activity under your account.
               Notify us immediately at{' '}
-              <a href="mailto:support@docsrok.com.au" className="text-orange-600 hover:underline">support@docsrok.com.au</a>{' '}
+              <a href="mailto:support@docsrok.com" className="text-orange-600 hover:underline">support@docsrok.com</a>{' '}
               if you suspect unauthorised access.
             </p>
             <p className="mt-3">
@@ -149,7 +149,7 @@ export default function TermsPage() {
               entitled to a remedy under that law, which may include a refund. We will also consider
               refunds at our discretion for billing errors or technical failures that prevented
               delivery. Contact{' '}
-              <a href="mailto:support@docsrok.com.au" className="text-orange-600 hover:underline">support@docsrok.com.au</a>.
+              <a href="mailto:support@docsrok.com" className="text-orange-600 hover:underline">support@docsrok.com</a>.
             </p>
           </section>
 
@@ -243,7 +243,7 @@ export default function TermsPage() {
             <h2 className="text-lg font-semibold text-gray-900 mb-3">15. Contact</h2>
             <p>
               For questions about these Terms, contact us at{' '}
-              <a href="mailto:support@docsrok.com.au" className="text-orange-600 hover:underline">support@docsrok.com.au</a>.
+              <a href="mailto:support@docsrok.com" className="text-orange-600 hover:underline">support@docsrok.com</a>.
             </p>
           </section>
 

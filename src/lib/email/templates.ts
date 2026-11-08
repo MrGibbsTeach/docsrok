@@ -50,7 +50,7 @@ export function welcomeEmail(params: {
   email: string
   userId: string
 }) {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://docsrok.com.au'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.docsrok.com'
 
   return {
     subject: 'Your Docs Rok documents are ready',
@@ -164,7 +164,7 @@ export function trialEndingEmail(params: {
   const trialDate = new Date(params.trialEndsAt).toLocaleDateString('en-AU', {
     day: 'numeric', month: 'long', year: 'numeric',
   })
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://docsrok.com.au'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.docsrok.com'
 
   return {
     subject: `Your Docs Rok trial ends in ${params.daysLeft} days`,
@@ -186,7 +186,7 @@ export function trialEndingEmail(params: {
 // ── Trial expired ─────────────────────────────────────────────
 
 export function trialExpiredEmail(params: { name: string }) {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://docsrok.com.au'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.docsrok.com'
 
   return {
     subject: 'Your Docs Rok trial has ended',
@@ -210,7 +210,7 @@ export function paymentConfirmedEmail(params: {
   amount: string
   nextBillingDate: string
 }) {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://docsrok.com.au'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.docsrok.com'
 
   return {
     subject: `Docs Rok — payment confirmed (${params.plan} plan)`,

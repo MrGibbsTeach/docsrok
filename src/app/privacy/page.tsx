@@ -27,7 +27,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-lg font-semibold text-gray-900 mb-3">1. About this Policy</h2>
             <p>
-              Docs Rok (&ldquo;we&rdquo;, &ldquo;us&rdquo;, &ldquo;our&rdquo;) operates the Docs Rok platform at docsrok.com and docsrok.com.au.
+              Docs Rok (&ldquo;we&rdquo;, &ldquo;us&rdquo;, &ldquo;our&rdquo;) operates the Docs Rok platform at docsrok.com.
               This Privacy Policy explains how we collect, use, store, and disclose personal information
               when you use our service.
             </p>
@@ -190,7 +190,7 @@ export default function PrivacyPage() {
             </ul>
             <p className="mt-3">
               To exercise any of these rights, contact us at{' '}
-              <a href="mailto:support@docsrok.com.au" className="text-orange-600 hover:underline">support@docsrok.com.au</a>.
+              <a href="mailto:support@docsrok.com" className="text-orange-600 hover:underline">support@docsrok.com</a>.
               We will respond within 30 days.
             </p>
           </section>
@@ -225,7 +225,7 @@ export default function PrivacyPage() {
             <h2 className="text-lg font-semibold text-gray-900 mb-3">11. Contact and complaints</h2>
             <p>
               For privacy questions or concerns, contact us at:{' '}
-              <a href="mailto:support@docsrok.com.au" className="text-orange-600 hover:underline">support@docsrok.com.au</a>
+              <a href="mailto:support@docsrok.com" className="text-orange-600 hover:underline">support@docsrok.com</a>
             </p>
             <p className="mt-3">
               If you are not satisfied with our response, you may lodge a complaint with the
