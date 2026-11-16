@@ -26,7 +26,7 @@ export const REGULATORY: Record<StateCode, {
   },
   // NZ jurisdiction — not yet exposed in UI (types.ts State / OnboardingForm still QLD|NSW only).
   // NZ prompts also require non-citation changes (000→111, ABN→NZBN, SWMS→Task Analysis/SSSP framing) —
-  // see D:\OneDrive\Personal\Work\DocsRok\regulatory-reference\markets\nz-prompt-changes.md
+  // see C:\Code\docsrok\regulatory-reference\markets\nz-prompt-changes.md
   NZ: {
     act: 'Health and Safety at Work Act 2015 (NZ)',
     regulation: 'Health and Safety at Work (General Risk and Workplace Management) Regulations 2016 (NZ)',
